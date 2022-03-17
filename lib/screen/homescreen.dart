@@ -7,7 +7,8 @@ import 'package:tws/screen/workout.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();}
+  _HomeScreenState createState() => _HomeScreenState();
+}
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
@@ -17,7 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
     WorkOut(),
     AppointmentScreen(),
     Feeds(),
-    AccountFragment()];
+    AccountFragment()
+  ];
 
   @override
   Widget build(Object context) {
@@ -28,15 +30,41 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Image.asset("assets/images/cleint.png",width: 34,height: 31,), title: Text('Clients')),
           BottomNavigationBarItem(
-              icon: Image.asset("assets/images/gallery.png",width: 34,height: 31,), title: Text('Gallery')),
+              icon: Image.asset(
+                "assets/images/cleint.png",
+                width: 34,
+                height: 31,
+              ),
+              label: 'Clients'),
           BottomNavigationBarItem(
-              icon: Image.asset("assets/images/appointment.png",width: 34,height: 31,), title: Text('Appointments')),
+              icon: Image.asset(
+                "assets/images/gallery.png",
+                width: 34,
+                height: 31,
+              ),
+              label: 'Gallery'),
           BottomNavigationBarItem(
-              icon: Image.asset("assets/images/feeds.png",width: 34,height: 31,), title: Text('Feeds')),
+              icon: Image.asset(
+                "assets/images/appointment.png",
+                width: 34,
+                height: 31,
+              ),
+              label: 'Appointments'),
           BottomNavigationBarItem(
-              icon: Image.asset("assets/images/account.png",width: 34,height: 31,), title: Text('Account')),
+              icon: Image.asset(
+                "assets/images/feeds.png",
+                width: 34,
+                height: 31,
+              ),
+              label: 'Feeds'),
+          BottomNavigationBarItem(
+              icon: Image.asset(
+                "assets/images/account.png",
+                width: 34,
+                height: 31,
+              ),
+              label: 'Account'),
         ],
         currentIndex: _selectedIndex,
         fixedColor: Colors.blue,
@@ -45,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void onItemTapped(int index){
+  void onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
