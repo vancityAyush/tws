@@ -9,6 +9,7 @@ import '../screen/createnewmealbycategory.dart';
 class CreateNewdiet extends StatefulWidget {
   final String id, tagMeal;
   CreateNewdiet({this.id, this.tagMeal});
+  List<Map<String, DateTime>> dataList = [];
 
   @override
   _CreateNewdietState createState() => _CreateNewdietState();
@@ -19,6 +20,7 @@ class _CreateNewdietState extends State<CreateNewdiet> {
   String createTag = "";
   bool _isLoad = false;
   bool _isLoadFood = false, _isLoadMeal;
+  List<dynamic> dataList = [];
 
   void removeFoodApi(String id, String mealId) async {
     setState(() {
@@ -50,7 +52,20 @@ class _CreateNewdietState extends State<CreateNewdiet> {
       setState(() {
         _isLoad = true;
       });
-
+      var selected = {
+        "from":
+            DateTime(selectedDate.year, selectedDate.month, selectedDate.day),
+        "to": DateTime(
+            selectedEndDate.year, selectedEndDate.month, selectedEndDate.day)
+      };
+      for (Map<String, DateTime> item in dataList)
+        if (item['from'].isAtSameMomentAs(selected['from']) &&
+            item['to'].isAtSameMomentAs(selected['to'])) {
+          Fluttertoast.showToast(
+              msg: "Diet with Same Date Already Created",
+              gravity: ToastGravity.BOTTOM);
+          return;
+        }
       await Provider.of<ApiManager>(context, listen: false).createNewDietApi(
           dietController.text,
           selectedDate.toString(),
@@ -335,70 +350,84 @@ class _CreateNewdietState extends State<CreateNewdiet> {
                 future: Provider.of<ApiManager>(context).reviewDietListApi(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data['data'].length,
+                    dataList = snapshot.data['data'].map<dynamic>((e) {
+                      DateTime to = DateTime.parse(e['to_date']);
+                      DateTime from = DateTime.parse(e['from_date']);
+
+                      return {
+                        "to": to,
+                        "from": from,
+                      };
+                    }).toList();
+                    final today = DateTime(DateTime.now().year,
+                        DateTime.now().month, DateTime.now().day);
+                    return ListView(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          // padding: EdgeInsets.all(10),
-                          margin: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Color(0XFF2CB3BF), width: 1),
-                              borderRadius: BorderRadius.circular(6)),
-                          child: ListTile(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => CreateNewMealByCategory(
-                                          id: snapshot.data['data'][index]
-                                              ['id'],
-                                          date: formatDate(
-                                                  DateTime(
-                                                      selectedDate.year,
-                                                      selectedDate.month,
-                                                      selectedDate.day),
-                                                  [yyyy, '-', mm, '-', dd])
-                                              .toString(),
-                                          toDate: snapshot.data['data'][index]
-                                              ['to_date'])))
-                                  // Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreateNewMealByCategory(id:snapshot.data['data'][index]['id'],date:formatDate(DateTime(selectedDate.year,selectedDate.month,selectedDate.day), [yyyy, '-', mm, '-', dd]).toString(),toDate:snapshot.data['data'][index]['to_date'])))
-                                  ;
-                            },
-                            title: Text(
-                              snapshot.data['data'][index]['name'],
-                              style: TextStyle(
-                                  fontSize: 18 *
-                                      MediaQuery.of(context).textScaleFactor,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0XFF2CB3BF)),
-                            ),
-                            subtitle: Text(
-                              '${snapshot.data['data'][index]['from_date']} to ${snapshot.data['data'][index]['to_date']}',
-                              style: TextStyle(
-                                  fontSize: 13 *
-                                      MediaQuery.of(context).textScaleFactor,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0XFF262626)),
-                            ),
-                            trailing: Container(
-                              width: 53,
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.keyboard_arrow_down_outlined,
-                                    color: Color(0XFF2CB3BF),
+                      children: [
+                        for (var data in snapshot.data['data'])
+                          if (DateTime.parse(data['to_date']).isAfter(today) ||
+                              DateTime.parse(data['to_date'])
+                                  .isAtSameMomentAs(today))
+                            Container(
+                              // padding: EdgeInsets.all(10),
+                              margin: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Color(0XFF2CB3BF), width: 1),
+                                  borderRadius: BorderRadius.circular(6)),
+                              child: ListTile(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          CreateNewMealByCategory(
+                                              id: data['id'],
+                                              date: formatDate(
+                                                      DateTime(
+                                                          selectedDate.year,
+                                                          selectedDate.month,
+                                                          selectedDate.day),
+                                                      [yyyy, '-', mm, '-', dd])
+                                                  .toString(),
+                                              toDate: data['to_date'])));
+                                  // Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreateNewMealByCategory(id:data['id'],date:formatDate(DateTime(selectedDate.year,selectedDate.month,selectedDate.day), [yyyy, '-', mm, '-', dd]).toString(),toDate:data['to_date'])))
+                                },
+                                title: Text(
+                                  data['name'],
+                                  style: TextStyle(
+                                      fontSize: 18 *
+                                          MediaQuery.of(context)
+                                              .textScaleFactor,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0XFF2CB3BF)),
+                                ),
+                                subtitle: Text(
+                                  '${data['from_date']} to ${data['to_date']}',
+                                  style: TextStyle(
+                                      fontSize: 13 *
+                                          MediaQuery.of(context)
+                                              .textScaleFactor,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0XFF262626)),
+                                ),
+                                trailing: Container(
+                                  width: 53,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.keyboard_arrow_down_outlined,
+                                        color: Color(0XFF2CB3BF),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Icon(Icons.more_vert)
+                                    ],
                                   ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Icon(Icons.more_vert)
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
+                      ],
                     );
                   } else {
                     return Text("");
