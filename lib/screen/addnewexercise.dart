@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tws/apiService/apiResponse/ResponseFetchUnits.dart';
 import 'package:tws/apiService/apimanager.dart';
@@ -11,19 +12,19 @@ class AddNewExerCise extends StatefulWidget {
 }
 
 class _AddNewExerCiseState extends State<AddNewExerCise> {
-
   TextEditingController nameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController youlinkController = TextEditingController();
   String selectType;
-  bool tagVideo = false,tagYoutube = false;
-  List<String> items = ['Video','Youtube Link'];
+  bool tagVideo = false, tagYoutube = false;
+  List<String> items = ['Video', 'Youtube Link'];
 
   String _mySelection;
   List<DataVideo> data = [];
 
   Future<String> getSWData() async {
-    var future = await Provider.of<ApiManager>(context,listen: false).fetchUnitApi();
+    var future =
+        await Provider.of<ApiManager>(context, listen: false).fetchUnitApi();
     setState(() {
       data = future.data;
     });
@@ -36,8 +37,9 @@ class _AddNewExerCiseState extends State<AddNewExerCise> {
   void onFileOpen() async {
     FilePickerResult result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['mp4'],);
-    if(result != null) {
+      allowedExtensions: ['mp4'],
+    );
+    if (result != null) {
       file = result.files.first;
       filename = File(file.path);
       // Provider.of<ApiManager>(context,listen: false).newSendMessageApi("msgBy", widget.sendToId, _enteredMessage,filename);
@@ -51,26 +53,34 @@ class _AddNewExerCiseState extends State<AddNewExerCise> {
 
   bool _isLoad = false;
 
-  void _trySubmitYoutube()async{
+  void _trySubmitYoutube() async {
     setState(() {
       _isLoad = true;
     });
-    await Provider.of<ApiManager>(context,listen: false).addNewExerciseYoutube(nameController.text ,descriptionController.text ,youlinkController.text, _mySelection);
+    await Provider.of<ApiManager>(context, listen: false).addNewExerciseYoutube(
+        nameController.text,
+        descriptionController.text,
+        youlinkController.text,
+        _mySelection);
     setState(() {
       _isLoad = false;
     });
   }
 
-  void _trySubmit()async{
+  void _trySubmit() async {
     setState(() {
       _isLoad = true;
     });
-    await Provider.of<ApiManager>(context,listen: false).addNewExercise(filename,nameController.text , descriptionController.text, _mySelection);
+    await Provider.of<ApiManager>(context, listen: false).addNewExercise(
+        filename,
+        nameController.text,
+        descriptionController.text,
+        _mySelection);
     setState(() {
       _isLoad = false;
     });
   }
-  
+
   @override
   void initState() {
     super.initState();
@@ -85,20 +95,31 @@ class _AddNewExerCiseState extends State<AddNewExerCise> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color(0XFF2CB3BF),
-        title: Text("Add New Exercise",style: TextStyle(
-            color: Colors.white
-        ),),
-        leading: Icon(Icons.arrow_back,color: Colors.white,),
+        title: Text(
+          "Add New Exercise",
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.asset("assets/images/spalsh.jpg",
+            Image.asset(
+              "assets/images/spalsh.jpg",
               width: MediaQuery.of(context).size.width,
-              height: 210,fit: BoxFit.cover,),
-
+              height: 210,
+              fit: BoxFit.cover,
+            ),
             Container(
-              margin: EdgeInsets.only(top:20,bottom: 20,right: 20,left: 20),
+              margin: EdgeInsets.only(top: 20, bottom: 20, right: 20, left: 20),
               padding: EdgeInsets.all(15),
               decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
@@ -111,42 +132,44 @@ class _AddNewExerCiseState extends State<AddNewExerCise> {
                     ),
                   ],
                   borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(22), topLeft: Radius.circular(22))
-              ),
+                      topRight: Radius.circular(22),
+                      topLeft: Radius.circular(22))),
               child: Column(
                 children: [
-
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("Exercise Name",style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black
-                    ),),
+                    child: Text(
+                      "Exercise Name",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
+                    ),
                   ),
-
-                  SizedBox(height: 10,),
-
+                  SizedBox(
+                    height: 10,
+                  ),
                   TextFormField(
                     controller: nameController,
                     autovalidateMode: AutovalidateMode.always,
                     keyboardType: TextInputType.text,
                     style: TextStyle(color: Color(0XFF262626)),
-                    decoration: InputDecoration(fillColor: Color(0XFFF2F2F2), filled: true,
+                    decoration: InputDecoration(
+                      fillColor: Color(0XFFF2F2F2),
+                      filled: true,
                       border: InputBorder.none,
                       hintText: "Exercise name",
                     ),
-                    onSaved: (String value) {
-                    },
+                    onSaved: (String value) {},
                   ),
-
-                  SizedBox(height: 10,),
-
+                  SizedBox(
+                    height: 10,
+                  ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 12,bottom: 10),
+                    padding: const EdgeInsets.only(top: 12, bottom: 10),
                     child: Container(
                       color: Color(0XFFF2F2F2),
-                      padding: EdgeInsets.only(left: 8,right: 8),
+                      padding: EdgeInsets.only(left: 8, right: 8),
                       child: new DropdownButton(
                         isExpanded: true,
                         hint: Text("Select Video Type"),
@@ -163,10 +186,10 @@ class _AddNewExerCiseState extends State<AddNewExerCise> {
                         onChanged: (newVal) {
                           setState(() {
                             selectType = newVal;
-                            if(selectType == "Video"){
+                            if (selectType == "Video") {
                               tagVideo = true;
                               tagYoutube = false;
-                            }else{
+                            } else {
                               tagVideo = false;
                               tagYoutube = true;
                             }
@@ -176,107 +199,118 @@ class _AddNewExerCiseState extends State<AddNewExerCise> {
                       ),
                     ),
                   ),
-
                   Visibility(
                     visible: tagVideo,
                     child: Column(
                       children: [
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Text("Exercise Videos",style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black
-                          ),),
+                          child: Text(
+                            "Exercise Videos",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
                         ),
-
-                        SizedBox(height: 10,),
-
+                        SizedBox(
+                          height: 10,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Image.asset("assets/images/spalsh.jpg",
+                            Image.asset(
+                              "assets/images/spalsh.jpg",
                               fit: BoxFit.cover,
-                              width: 170,height: 90,),
+                              width: 170,
+                              height: 90,
+                            ),
 
-                            SizedBox(width: 35,),
+                            SizedBox(
+                              width: 35,
+                            ),
 
                             GestureDetector(
                               onTap: onFileOpen,
-                              child: Text("Choose",
+                              child: Text(
+                                "Choose",
                                 style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w600
-                                ),),
+                                    fontSize: 17, fontWeight: FontWeight.w600),
+                              ),
                             ),
                             // Icon(Icons.delete,size: 31,color: Colors.red,)
-
                           ],
                         ),
-
-                        SizedBox(height: 10,),
-
+                        SizedBox(
+                          height: 10,
+                        ),
                       ],
                     ),
                   ),
-
-                  SizedBox(height: 10,),
-
+                  SizedBox(
+                    height: 10,
+                  ),
                   Visibility(
                     visible: tagYoutube,
                     child: Column(
                       children: [
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Text("Youtube Link",style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black
-                          ),),
+                          child: Text(
+                            "Youtube Link",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
                         ),
-
-                        SizedBox(height: 10,),
-
+                        SizedBox(
+                          height: 10,
+                        ),
                         TextFormField(
                           controller: youlinkController,
                           autovalidateMode: AutovalidateMode.always,
                           keyboardType: TextInputType.text,
                           style: TextStyle(color: Color(0XFF262626)),
                           decoration: InputDecoration(
-                            fillColor: Color(0XFFF2F2F2),
-                            filled: true,
-                            border: InputBorder.none,
-                            hintText: "Enter youtube link"),
+                              fillColor: Color(0XFFF2F2F2),
+                              filled: true,
+                              border: InputBorder.none,
+                              hintText: "Enter youtube link"),
                           onSaved: (String value) {},
                         ),
                       ],
                     ),
                   ),
-
-                  SizedBox(height: 10,),
-
+                  SizedBox(
+                    height: 10,
+                  ),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("Description",style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black
-                    ),),
+                    child: Text(
+                      "Description",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
+                    ),
                   ),
-
-                  SizedBox(height: 10,),
-
+                  SizedBox(
+                    height: 10,
+                  ),
                   TextFormField(
                     controller: descriptionController,
                     minLines: 1,
                     maxLines: 4,
                     autovalidateMode: AutovalidateMode.always,
                     style: TextStyle(color: Color(0XFF262626)),
-                    decoration: InputDecoration(fillColor: Color(0XFFF2F2F2), filled: true,
+                    decoration: InputDecoration(
+                      fillColor: Color(0XFFF2F2F2),
+                      filled: true,
                       border: InputBorder.none,
                       hintText: "Add video description",
                       contentPadding:
-                      EdgeInsets.symmetric(horizontal: 10,vertical: 30),
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 30),
                     ),
                     // decoration: const InputDecoration(
                     //   hintText: 'Bio',
@@ -288,25 +322,28 @@ class _AddNewExerCiseState extends State<AddNewExerCise> {
                       // code when the user saves the form.
                     },
                   ),
-
-                  SizedBox(height: 10,),
-
+                  SizedBox(
+                    height: 10,
+                  ),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("Select Unit",style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black
-                    ),),
+                    child: Text(
+                      "Select Unit",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
+                    ),
                   ),
-
-                  SizedBox(height: 10,),
-
+                  SizedBox(
+                    height: 10,
+                  ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 10.0,right: 10,top: 12,bottom: 10),
+                    padding: const EdgeInsets.only(
+                        left: 10.0, right: 10, top: 12, bottom: 10),
                     child: Container(
                       color: Color(0XFFF2F2F2),
-                      padding: EdgeInsets.only(left: 8,right: 8),
+                      padding: EdgeInsets.only(left: 8, right: 8),
                       child: new DropdownButton(
                         isExpanded: true,
                         hint: Text("Select Unit"),
@@ -318,7 +355,8 @@ class _AddNewExerCiseState extends State<AddNewExerCise> {
                         }).toList(),
                         underline: Container(
                           height: 2,
-                          color: Colors.transparent,),
+                          color: Colors.transparent,
+                        ),
                         onChanged: (newVal) {
                           setState(() {
                             _mySelection = newVal;
@@ -345,7 +383,7 @@ class _AddNewExerCiseState extends State<AddNewExerCise> {
                             dropdownValue = data;
                           });
                         },
-                        *//*value: dropdownValue,
+                        */ /*value: dropdownValue,
                         icon: Icon(Icons.arrow_drop_down),
                         iconSize: 24,
                         elevation: 16,
@@ -364,37 +402,39 @@ class _AddNewExerCiseState extends State<AddNewExerCise> {
                             value: value,
                             child: Text(value),
                           );
-                        }).toList(),*//*
+                        }).toList(),*/ /*
                       ),*/
                     ),
                   ),
-
-                  if(_isLoad)
+                  if (_isLoad)
                     CircularProgressIndicator()
                   else
-                  GestureDetector(
-                    onTap: (){
-                      if(selectType == "Video"){
-                        _trySubmit();
-                      }else{
-                        _trySubmitYoutube();
-                      }},
-                    child: Container(
-                      margin: EdgeInsets.only(top: 15),
-                      padding: EdgeInsets.only(left: 22,right: 22,top: 9,bottom: 9),
-                      decoration: BoxDecoration(
-                        color: Color(0XFF2CB3BF),
-                        borderRadius: BorderRadius.circular(20)
+                    GestureDetector(
+                      onTap: () {
+                        if (selectType == "Video") {
+                          _trySubmit();
+                        } else {
+                          _trySubmitYoutube();
+                        }
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(top: 15),
+                        padding: EdgeInsets.only(
+                            left: 22, right: 22, top: 9, bottom: 9),
+                        decoration: BoxDecoration(
+                            color: Color(0XFF2CB3BF),
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Text(
+                          "SUBMIT",
+                          style: TextStyle(
+                            fontSize:
+                                18 * MediaQuery.of(context).textScaleFactor,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0XFFFFFFFF),
+                          ),
+                        ),
                       ),
-                      child: Text("SUBMIT",
-                      style: TextStyle(
-                        fontSize: 18*MediaQuery.of(context).textScaleFactor,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0XFFFFFFFF),
-                      ),),
-                    ),
-                  )
-
+                    )
                 ],
               ),
             ),

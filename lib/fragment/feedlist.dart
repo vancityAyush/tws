@@ -12,7 +12,6 @@ class FeedList extends StatefulWidget {
 }
 
 class _FeedListState extends State<FeedList> {
-
   bool _isLoads = false;
 
   void deleteBlogsApi(String id) async {
@@ -31,33 +30,52 @@ class _FeedListState extends State<FeedList> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color(0XFF2CB3BF),
-        title: Text("Feeds",style: TextStyle(
-            color: Colors.white
-        ),),
-        leading: Icon(Icons.arrow_back,color: Colors.white,),),
+        title: Text(
+          "Feeds",
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
+      ),
       body: FutureBuilder(
         future: Provider.of<ApiManager>(context).fetchBlogApi(),
-        builder: (context,snapshots){
-          if(snapshots.connectionState == ConnectionState.waiting)
+        builder: (context, snapshots) {
+          if (snapshots.connectionState == ConnectionState.waiting)
             return Center(
-              child: CircularProgressIndicator(),);
+              child: CircularProgressIndicator(),
+            );
           else if (snapshots.hasError) {
-            return Text("${snapshots.error}");}
-          else{
-            if(snapshots.hasData){
+            return Text("${snapshots.error}");
+          } else {
+            if (snapshots.hasData) {
               ResponseFetchBlog response = snapshots.data;
               List<DataFetchBlog> data = response.data;
               return ListView.builder(
                 itemCount: data.length,
-                itemBuilder: (context,index){
+                itemBuilder: (context, index) {
                   return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
-                        onTap: (){
-                          if(data[index].image == null){
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => VideoApp(youtubelink:data[index].video,description:data[index].description,name:data[index].title)));
-                          }else{
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=> FeedListDetail(image:data[index].image,title:data[index].title,description:data[index].description)));
+                        onTap: () {
+                          if (data[index].image == null) {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => VideoApp(
+                                    youtubelink: data[index].video,
+                                    description: data[index].description,
+                                    name: data[index].title)));
+                          } else {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => FeedListDetail(
+                                    image: data[index].image,
+                                    title: data[index].title,
+                                    description: data[index].description)));
                           }
                         },
                         child: Card(
@@ -66,77 +84,118 @@ class _FeedListState extends State<FeedList> {
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
                               children: <Widget>[
-
-                                if(data[index].image == null)
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(15), child: Image.asset("assets/images/spalsh.jpg",height: 185,fit: BoxFit.cover,width: MediaQuery.of(context).size.width,),)
+                                if (data[index].image == null)
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: Image.asset(
+                                      "assets/images/spalsh.jpg",
+                                      height: 185,
+                                      fit: BoxFit.cover,
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
+                                  )
                                 else
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
-                                    child: Image.network("http://fitnessapp.frantic.in/"+data[index].image,height: 185,fit: BoxFit.cover,width: MediaQuery.of(context).size.width,),),
-
-                                SizedBox(height: 10,),
-
+                                    child: Image.network(
+                                      "http://fitnessapp.frantic.in/" +
+                                          data[index].image,
+                                      height: 185,
+                                      fit: BoxFit.cover,
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
+                                  ),
+                                SizedBox(
+                                  height: 10,
+                                ),
                                 Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Text(data[index].title,style: TextStyle(
-                                      fontSize: 19*MediaQuery.of(context).textScaleFactor,
-                                      color: Color(0XFF4B4B4B),
-                                      fontWeight: FontWeight.normal
-                                  ),),
+                                  child: Text(
+                                    data[index].title,
+                                    style: TextStyle(
+                                        fontSize: 19 *
+                                            MediaQuery.of(context)
+                                                .textScaleFactor,
+                                        color: Color(0XFF4B4B4B),
+                                        fontWeight: FontWeight.normal),
+                                  ),
                                 ),
-
-                                SizedBox(height: 5,),
-
+                                SizedBox(
+                                  height: 5,
+                                ),
                                 Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Text(data[index].description,style: TextStyle(
-                                      color: Color(0XFF737373),
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 15
-                                  ),),
+                                  child: Text(
+                                    data[index].description,
+                                    style: TextStyle(
+                                        color: Color(0XFF737373),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15),
+                                  ),
                                 ),
-
-                                SizedBox(height: 7,),
-
+                                SizedBox(
+                                  height: 7,
+                                ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     GestureDetector(
-                                      onTap: (){
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => FeedsEdit(heading:data[index].title,description:data[index].description,id:data[index].id,image:data[index].video)));
-                                      },
-                                        child: Image.asset("assets/images/edits.png",width: 22,height: 22,)),
-                                    SizedBox(width: 25,),
-                                    if(_isLoads)
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      FeedsEdit(
+                                                          heading:
+                                                              data[index].title,
+                                                          description:
+                                                              data[index]
+                                                                  .description,
+                                                          id: data[index].id,
+                                                          image: data[index]
+                                                              .video)));
+                                        },
+                                        child: Image.asset(
+                                          "assets/images/edits.png",
+                                          width: 22,
+                                          height: 22,
+                                        )),
+                                    SizedBox(
+                                      width: 25,
+                                    ),
+                                    if (_isLoads)
                                       CircularProgressIndicator()
                                     else
-                                    GestureDetector(
-                                      onTap: (){
-                                        deleteBlogsApi(data[index].id);
-                                      },
-                                        child: Image.asset("assets/images/delets.png",width: 22,height: 22,)),
+                                      GestureDetector(
+                                          onTap: () {
+                                            deleteBlogsApi(data[index].id);
+                                          },
+                                          child: Image.asset(
+                                            "assets/images/delets.png",
+                                            width: 22,
+                                            height: 22,
+                                          )),
                                   ],
                                 )
                               ],
                             ),
                           ),
                         ),
-                      )
-                  );
+                      ));
                 },
               );
-            }else{
-              return Center(child: Text("No feeds added yet",
-                style: TextStyle(
-                    fontFamily: "Proxima Nova",
-                    fontWeight: FontWeight.w600,
-                    fontSize: 20*MediaQuery.of(context).textScaleFactor
-                ),),);
+            } else {
+              return Center(
+                child: Text(
+                  "No feeds added yet",
+                  style: TextStyle(
+                      fontFamily: "Proxima Nova",
+                      fontWeight: FontWeight.w600,
+                      fontSize: 20 * MediaQuery.of(context).textScaleFactor),
+                ),
+              );
             }
           }
         },
-
       ),
     );
   }

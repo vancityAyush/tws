@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:tws/apiService/apiResponse/ResponseFetchClients.dart';
 import 'package:tws/apiService/apimanager.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 import 'appointmentlist.dart';
 
 class AppointmentScreen extends StatefulWidget {
@@ -13,25 +13,28 @@ class AppointmentScreen extends StatefulWidget {
 }
 
 class _AppointmentScreenState extends State<AppointmentScreen> {
-
   bool _isLoad = false;
 
-  void _trySubmit()async{
-    if(dropdownValue == "Meeting Type"){
-      Fluttertoast.showToast(msg: "Select Type",
-          gravity: ToastGravity.BOTTOM);
-    }else if(dropdownValueUser == "Select User"){
-      Fluttertoast.showToast(msg: "Select User",
-          gravity: ToastGravity.BOTTOM);
-    }
-    else if(descriptionController.text.isEmpty){
-      Fluttertoast.showToast(msg: "Enter description",
-          gravity: ToastGravity.BOTTOM);
-    }else{
+  void _trySubmit() async {
+    if (dropdownValue == "Meeting Type") {
+      Fluttertoast.showToast(msg: "Select Type", gravity: ToastGravity.BOTTOM);
+    } else if (dropdownValueUser == "Select User") {
+      Fluttertoast.showToast(msg: "Select User", gravity: ToastGravity.BOTTOM);
+    } else if (descriptionController.text.isEmpty) {
+      Fluttertoast.showToast(
+          msg: "Enter description", gravity: ToastGravity.BOTTOM);
+    } else {
       setState(() {
         _isLoad = true;
       });
-      await Provider.of<ApiManager>(context,listen: false).createAppointment(dropdownValue, selectedDate.toString(), _time.toString(), _timeEnd.toString(), dropdownValueUser, descriptionController.text,meetingLinkController.text);
+      await Provider.of<ApiManager>(context, listen: false).createAppointment(
+          dropdownValue,
+          selectedDate.toString(),
+          _time.toString(),
+          _timeEnd.toString(),
+          dropdownValueUser,
+          descriptionController.text,
+          meetingLinkController.text);
       setState(() {
         _isLoad = false;
       });
@@ -46,7 +49,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   void _selectTime() async {
     final TimeOfDay newTime = await showTimePicker(
       context: context,
-      initialTime: _time,);
+      initialTime: _time,
+    );
 
     if (newTime != null) {
       setState(() {
@@ -61,7 +65,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   void _selectEndTime() async {
     final TimeOfDay newTime = await showTimePicker(
       context: context,
-      initialTime: _timeEnd,);
+      initialTime: _timeEnd,
+    );
 
     if (newTime != null) {
       setState(() {
@@ -76,16 +81,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
   String dropdownValue = 'Meeting Type';
 
-  List <String> spinnerItems = [
-    'Meeting Type',
-    'Online',
-    'Offline'] ;
+  List<String> spinnerItems = ['Meeting Type', 'Online', 'Offline'];
 
   String dropdownValueUser;
-  List <String> spinnerItemsUser = [
-    'Select User',
-    'Dharmendra',
-    'Rohit'] ;
+  List<String> spinnerItemsUser = ['Select User', 'Dharmendra', 'Rohit'];
 
   List<DataFetchClients> data = [];
 
@@ -98,7 +97,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       context: context,
       initialDate: selectedDate, // Refer step 1
       firstDate: DateTime(2000),
-      lastDate: DateTime(2035),);
+      lastDate: DateTime(2035),
+    );
 
     if (picked != null && picked != selectedDate)
       setState(() {
@@ -109,7 +109,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      var future = Provider.of<ApiManager>(context,listen: false).fetchClientsApi();
+      var future =
+          Provider.of<ApiManager>(context, listen: false).fetchClientsApi();
       future.then((value) {
         setState(() {
           data = value.data;
@@ -122,31 +123,43 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
         elevation: 0,
-        leading: Icon(Icons.arrow_back,color: Colors.white,),
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: Color(0XFF2CB3BF),
         centerTitle: false,
-        title: Text("Add Appointment",style: TextStyle(
-            fontSize: 20*MediaQuery.of(context).textScaleFactor,
-            color: Colors.white
-        ),),
+        title: Text(
+          "Add Appointment",
+          style: TextStyle(
+              fontSize: 20 * MediaQuery.of(context).textScaleFactor,
+              color: Colors.white),
+        ),
         actions: [
           GestureDetector(
-              onTap: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => AppointmentList()));
-                },
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => AppointmentList()));
+              },
               child: Padding(
                 padding: const EdgeInsets.only(right: 8.0),
-                child: Icon(Icons.double_arrow,size: 33,),
+                child: Icon(
+                  Icons.double_arrow,
+                  size: 33,
+                ),
               ))
         ],
       ),
-
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.only(top:20,bottom: 20,right: 20,left: 20),
+          margin: EdgeInsets.only(top: 20, bottom: 20, right: 20, left: 20),
           decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               color: Colors.white,
@@ -158,16 +171,15 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                 ),
               ],
               borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(22), topLeft: Radius.circular(22))
-          ),
+                  topRight: Radius.circular(22), topLeft: Radius.circular(22))),
           child: Column(
             children: <Widget>[
-
               Padding(
-                padding: const EdgeInsets.only(left: 10.0,right: 10,top: 12,bottom: 10),
+                padding: const EdgeInsets.only(
+                    left: 10.0, right: 10, top: 12, bottom: 10),
                 child: Container(
                   color: Color(0XFFF2F2F2),
-                  padding: EdgeInsets.only(left: 8,right: 8),
+                  padding: EdgeInsets.only(left: 8, right: 8),
                   child: DropdownButton<String>(
                     isExpanded: true,
                     value: dropdownValue,
@@ -182,16 +194,17 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     onChanged: (String data) {
                       setState(() {
                         dropdownValue = data;
-                        if(dropdownValue == "Online"){
+                        if (dropdownValue == "Online") {
                           statusOffline = false;
                           statusOnline = true;
-                        }else{
+                        } else {
                           statusOffline = true;
                           statusOnline = false;
                         }
                       });
                     },
-                    items: spinnerItems.map<DropdownMenuItem<String>>((String value) {
+                    items: spinnerItems
+                        .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -200,7 +213,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   ),
                 ),
               ),
-
               Visibility(
                 visible: statusOnline,
                 child: Column(
@@ -208,15 +220,16 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
-                        padding: const EdgeInsets.only(left:10.0),
-                        child: Text("Meeting Link",style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black
-                        ),),
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: Text(
+                          "Meeting Link",
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black),
+                        ),
                       ),
                     ),
-
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
@@ -225,11 +238,13 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         maxLines: 4,
                         autovalidateMode: AutovalidateMode.always,
                         style: TextStyle(color: Color(0XFF262626)),
-                        decoration: InputDecoration(fillColor: Color(0XFFF2F2F2), filled: true,
+                        decoration: InputDecoration(
+                          fillColor: Color(0XFFF2F2F2),
+                          filled: true,
                           border: InputBorder.none,
                           hintText: "",
-                          contentPadding:
-                          EdgeInsets.symmetric(horizontal: 10,vertical: 30),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 30),
                         ),
                         // decoration: const InputDecoration(
                         //   hintText: 'Bio',
@@ -244,39 +259,41 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   ],
                 ),
               ),
-
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.only(left:10.0),
-                  child: Text("Appointment Date",style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black
-                  ),),
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    "Appointment Date",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black),
+                  ),
                 ),
               ),
-
               Stack(
                 children: [
                   Container(
-                    width:300,
-                    height:50,
+                    width: 300,
+                    height: 50,
                     margin: EdgeInsets.only(top: 8),
                     child: RaisedButton(
                       onPressed: () => _selectDate(context), // Refer step 3
-                      child:selectedDate==null?Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text("Appointment Date")):Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Appointment Date: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                          style: TextStyle(color: Colors.black,
-                              fontWeight: FontWeight.w400,
-                              fontSize:16
-                          ),
-                        ),
-                      ),
+                      child: selectedDate == null
+                          ? Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text("Appointment Date"))
+                          : Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Appointment Date: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 16),
+                              ),
+                            ),
                       color: Colors.white,
                     ),
                   ),
@@ -287,81 +304,85 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       child: Icon(Icons.arrow_drop_down))
                 ],
               ),
-
-              SizedBox(height: 20,),
-
+              SizedBox(
+                height: 20,
+              ),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.only(left:10.0),
-                  child: Text("Timings",style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black
-                  ),),
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    "Timings",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black),
+                  ),
                 ),
               ),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Expanded(
                     flex: 1,
                     child: Container(
-                      height:50,
+                      height: 50,
                       margin: EdgeInsets.only(top: 8),
                       /*decoration:BoxDecoration(
                               border:Border.all()),*/
                       child: RaisedButton(
                         onPressed: () => _selectTime(), // Refer step 3
-                        child:_time==null?Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text("Start Time")):Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Start Time: ${_time.hour}:${_time.minute}',
-                            style: TextStyle(color: Colors.black,
-                                fontWeight: FontWeight.w400,
-                                fontSize:13
-                            ),
-                          ),
-                        ),
+                        child: _time == null
+                            ? Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text("Start Time"))
+                            : Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Start Time: ${_time.hour}:${_time.minute}',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 13),
+                                ),
+                              ),
                         color: Colors.white,
                       ),
                     ),
                   ),
-
                   Expanded(
                     flex: 1,
                     child: Container(
-                      height:50,
+                      height: 50,
                       margin: EdgeInsets.only(top: 8),
                       child: RaisedButton(
                         onPressed: () => _selectEndTime(), // Refer step 3
-                        child:_timeEnd==null?Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text("End Time")):Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'End Time: ${_timeEnd.hour}:${_timeEnd.minute}',
-                            style: TextStyle(color: Colors.black,
-                                fontWeight: FontWeight.w400,
-                                fontSize:13
-                            ),
-                          ),
-                        ),
+                        child: _timeEnd == null
+                            ? Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text("End Time"))
+                            : Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'End Time: ${_timeEnd.hour}:${_timeEnd.minute}',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 13),
+                                ),
+                              ),
                         color: Colors.white,
                       ),
                     ),
                   ),
                 ],
               ),
-
               Padding(
-                padding: const EdgeInsets.only(left: 10.0,right: 10,top: 12,bottom: 10),
+                padding: const EdgeInsets.only(
+                    left: 10.0, right: 10, top: 12, bottom: 10),
                 child: Container(
                   color: Color(0XFFF2F2F2),
-                  padding: EdgeInsets.only(left: 8,right: 8),
+                  padding: EdgeInsets.only(left: 8, right: 8),
                   child: DropdownButton<String>(
                     isExpanded: true,
                     value: dropdownValueUser,
@@ -378,7 +399,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         dropdownValueUser = data;
                       });
                     },
-                    items: data.map<DropdownMenuItem<String>>((DataFetchClients value) {
+                    items: data.map<DropdownMenuItem<String>>(
+                        (DataFetchClients value) {
                       return DropdownMenuItem<String>(
                         value: value.name,
                         child: Text(value.name),
@@ -387,19 +409,19 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   ),
                 ),
               ),
-
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.only(left:10.0),
-                  child: Text("Description",style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black
-                  ),),
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    "Description",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black),
+                  ),
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -408,11 +430,13 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   maxLines: 4,
                   autovalidateMode: AutovalidateMode.always,
                   style: TextStyle(color: Color(0XFF262626)),
-                  decoration: InputDecoration(fillColor: Color(0XFFF2F2F2), filled: true,
+                  decoration: InputDecoration(
+                    fillColor: Color(0XFFF2F2F2),
+                    filled: true,
                     border: InputBorder.none,
                     hintText: "",
                     contentPadding:
-                    EdgeInsets.symmetric(horizontal: 10,vertical: 30),
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 30),
                   ),
                   // decoration: const InputDecoration(
                   //   hintText: 'Bio',
@@ -424,36 +448,32 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   },
                 ),
               ),
-
-              if(_isLoad)
+              if (_isLoad)
                 CircularProgressIndicator()
               else
-              GestureDetector(
-                onTap: _trySubmit,
-                child: Container(
-                  margin: EdgeInsets.only(
-                      top: 20, bottom: 10, left: 10, right: 10),
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width,
-                  height: 45,
-                  child: Center(
-                    child: Text("SUBMIT", style: TextStyle(
-                        fontSize: 21 * MediaQuery
-                            .of(context)
-                            .textScaleFactor,
-                        color: Colors.white,
-                        fontWeight: FontWeight.normal
-                    ),),
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Color(0XFF299FAB),
+                GestureDetector(
+                  onTap: _trySubmit,
+                  child: Container(
+                    margin: EdgeInsets.only(
+                        top: 20, bottom: 10, left: 10, right: 10),
+                    width: MediaQuery.of(context).size.width,
+                    height: 45,
+                    child: Center(
+                      child: Text(
+                        "SUBMIT",
+                        style: TextStyle(
+                            fontSize:
+                                21 * MediaQuery.of(context).textScaleFactor,
+                            color: Colors.white,
+                            fontWeight: FontWeight.normal),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Color(0XFF299FAB),
+                    ),
                   ),
                 ),
-              ),
-
             ],
           ),
         ),

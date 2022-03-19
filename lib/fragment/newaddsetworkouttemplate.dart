@@ -1,8 +1,7 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
 import 'package:tws/apiService/AppConstant.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:tws/apiService/apimanager.dart';
 import 'package:tws/apiService/sharedprefrence.dart';
 
@@ -375,7 +374,14 @@ class _NewAddWorkoutTemplateState extends State<NewAddWorkoutTemplate> {
           onTap: (){
             Navigator.pop(context);
           },
-            child: Icon(Icons.arrow_back,color: Colors.white,)),
+            child: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),)),
         backgroundColor: Color(0XFF2CB3BF),
         title: Text("New Workout Template",style: TextStyle(
             fontSize: 16*MediaQuery.of(context).textScaleFactor,

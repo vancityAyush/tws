@@ -13,7 +13,14 @@ class ReviewTrainerTemplate extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        leading: Icon(Icons.arrow_back,color: Colors.white,),
+        leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),),
         backgroundColor: Color(0XFF2CB3BF),
         title: Text("REVIEW CLIENT WORKOUT",style: TextStyle(
             fontSize: 18*MediaQuery.of(context).textScaleFactor,

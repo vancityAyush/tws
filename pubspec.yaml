@@ -33,6 +33,7 @@ dependencies:
   simple_animations: ^2.5.0
   date_format: ^2.0.4
   photo_view: ^0.13.0
+  syncfusion_flutter_pdfviewer: ^19.4.56-beta
 
 dev_dependencies:
   flutter_test:
@@ -42,3 +43,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/
