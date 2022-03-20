@@ -6,16 +6,45 @@ import 'package:tws/screen/addnewexercise.dart';
 import 'package:tws/screen/subcategorydetail.dart';
 import 'package:tws/screen/youtubescreen.dart';
 
-class SubCategory extends StatefulWidget {
-  /*final String name;
+import '../apiService/apiResponse/ResponseFetchWorkoutId.dart';
 
-  SubCategory();*/
+class SubCategory extends StatefulWidget {
+  final String name, desc;
+  SubCategory({this.name = "", this.desc = ""});
 
   @override
   _SubCategoryState createState() => _SubCategoryState();
 }
 
 class _SubCategoryState extends State<SubCategory> {
+  List<Data> searchData = [];
+  List<Data> data;
+  ResponseFetchWorkoutCategoryId response;
+
+  final _controller = TextEditingController();
+  void filterSearchResults(String query) {
+    List<Data> dummySearchList = List<Data>();
+    dummySearchList.addAll(searchData);
+    if (query.isNotEmpty) {
+      List<Data> dummyListData = List<Data>();
+      dummySearchList.forEach((item) {
+        if (item.name.contains(query)) {
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        data.clear();
+        data.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        data.clear();
+        data.addAll(searchData);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +52,7 @@ class _SubCategoryState extends State<SubCategory> {
         elevation: 0,
         backgroundColor: Color(0XFF2CB3BF),
         title: Text(
-          "",
+          widget.name,
           style: TextStyle(color: Colors.white),
         ),
         leading: InkWell(
@@ -57,6 +86,13 @@ class _SubCategoryState extends State<SubCategory> {
           child: Column(
             children: <Widget>[
               Container(
+                child: Text(widget.desc,
+                    style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black)),
+              ),
+              Container(
                 height: 60,
                 child: Center(
                   child: Text(
@@ -71,20 +107,32 @@ class _SubCategoryState extends State<SubCategory> {
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: TextFormField(
-                  enabled: false,
+                  controller: _controller,
+                  enabled: true,
                   onSaved: (value) {},
                   keyboardType: TextInputType.text,
                   maxLength: 25,
                   maxLines: 1,
-                  onChanged: (String value) {},
-                  decoration: const InputDecoration(
+                  onChanged: (String value) {
+                    filterSearchResults(value);
+                  },
+                  decoration: InputDecoration(
                     contentPadding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                        EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                     border: InputBorder.none,
                     hintText: 'Search here',
                     filled: true,
                     counterText: "",
                     prefixIcon: Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: () async {
+                        setState(() {
+                          data = searchData;
+                          _controller.clear();
+                        });
+                      },
+                    ),
                     fillColor: Color(0xFFEBF0F3),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -122,7 +170,8 @@ class _SubCategoryState extends State<SubCategory> {
                       if (snapshots.hasData) {
                         ResponseFetchWorkoutCategoryId response =
                             snapshots.data;
-                        List<Data> data = response.data;
+                        searchData = response.data;
+                        if (data == null) data = response.data;
                         return response.errorCode == 0
                             ? Container(
                                 height:
@@ -138,19 +187,22 @@ class _SubCategoryState extends State<SubCategory> {
                                           MediaQuery.of(context)
                                               .textScaleFactor),
                                 )))
-                            : Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 10, right: 10),
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemCount: data.length,
-                                    itemBuilder: (context, index) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          if (data[index].youTubeLink == "") {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
+                            : data.length == 0 && response.errorCode == 1
+                                ? Text("No Match Found")
+                                : Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10, right: 10),
+                                    child: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: data.length,
+                                        itemBuilder: (context, index) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              if (data[index].youTubeLink ==
+                                                  "") {
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
                                                     builder: (context) =>
                                                         SubCategoryDetail(
                                                             video: data[index]
@@ -159,10 +211,12 @@ class _SubCategoryState extends State<SubCategory> {
                                                                     index]
                                                                 .description,
                                                             name: data[index]
-                                                                .name)));
-                                          } else {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
+                                                                .name),
+                                                  ),
+                                                );
+                                              } else {
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
                                                     builder: (context) =>
                                                         VideoApp(
                                                             youtubelink: data[
@@ -172,145 +226,146 @@ class _SubCategoryState extends State<SubCategory> {
                                                                     index]
                                                                 .description,
                                                             name: data[index]
-                                                                .name)));
-                                          }
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(5.0),
-                                          child: Stack(
-                                            children: [
-                                              ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  child: Image.asset(
-                                                    "assets/images/spalsh.jpg",
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                            .size
-                                                            .width,
-                                                    height: 165,
-                                                    fit: BoxFit.cover,
-                                                  )),
-                                              Align(
-                                                alignment: Alignment.topRight,
-                                                child: GestureDetector(
-                                                    onTap: () {
-                                                      return showDialog(
-                                                          context: context,
-                                                          builder: (ctx) {
-                                                            return StatefulBuilder(
-                                                                builder: (BuildContext
-                                                                        context,
-                                                                    StateSetter
-                                                                        setState) {
-                                                              return Dialog(
-                                                                shape: RoundedRectangleBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            7.0)),
-                                                                child:
-                                                                    Container(
-                                                                  height: 150,
-                                                                  child:
-                                                                      Padding(
-                                                                    padding:
-                                                                        const EdgeInsets.fromLTRB(
+                                                                .name),
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(5.0),
+                                              child: Stack(
+                                                children: [
+                                                  ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    child: Image.asset(
+                                                      "assets/images/spalsh.jpg",
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      height: 165,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.topRight,
+                                                    child: GestureDetector(
+                                                        onTap: () {
+                                                          return showDialog(
+                                                              context: context,
+                                                              builder: (ctx) {
+                                                                return StatefulBuilder(builder:
+                                                                    (BuildContext
+                                                                            context,
+                                                                        StateSetter
+                                                                            setState) {
+                                                                  return Dialog(
+                                                                    shape: RoundedRectangleBorder(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(7.0)),
+                                                                    child:
+                                                                        Container(
+                                                                      height:
+                                                                          150,
+                                                                      child:
+                                                                          Padding(
+                                                                        padding: const EdgeInsets.fromLTRB(
                                                                             10,
                                                                             10,
                                                                             10,
                                                                             10),
-                                                                    child:
-                                                                        Column(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .center,
-                                                                      children: [
-                                                                        Text(
-                                                                          'Do you want to delete workout?',
-                                                                          style: TextStyle(
-                                                                              fontWeight: FontWeight.bold,
-                                                                              fontSize: 20),
-                                                                          textAlign:
-                                                                              TextAlign.center,
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              25,
-                                                                        ),
-                                                                        Row(
+                                                                        child:
+                                                                            Column(
                                                                           mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceEvenly,
+                                                                              MainAxisAlignment.center,
                                                                           children: [
-                                                                            ButtonTheme(
-                                                                              minWidth: MediaQuery.of(context).size.width * 0.28,
-                                                                              height: MediaQuery.of(context).size.width * 0.13,
-                                                                              child: RaisedButton(
-                                                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0), side: BorderSide(color: Color(0XFF2CB3BF))),
-                                                                                textColor: Colors.white,
-                                                                                color: Color(0XFF2CB3BF),
-                                                                                splashColor: Colors.blue,
-                                                                                onPressed: () async {
-                                                                                  setState(() {
-                                                                                    Provider.of<ApiManager>(context, listen: false).removeWorkoutApi(data[index].id.toString());
-                                                                                    Navigator.pop(context);
-                                                                                  });
-                                                                                },
-                                                                                child: Text(
-                                                                                  'YES',
-                                                                                  style: TextStyle(fontSize: 18 * MediaQuery.of(context).textScaleFactor, fontFamily: "Proxima Nova", fontWeight: FontWeight.w600),
-                                                                                ),
-                                                                              ),
+                                                                            Text(
+                                                                              'Do you want to delete workout?',
+                                                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                              textAlign: TextAlign.center,
                                                                             ),
-                                                                            ButtonTheme(
-                                                                              minWidth: MediaQuery.of(context).size.width * 0.28,
-                                                                              height: MediaQuery.of(context).size.width * 0.13,
-                                                                              child: RaisedButton(
-                                                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0), side: BorderSide(color: Color(0XFF2CB3BF))),
-                                                                                textColor: Colors.white,
-                                                                                color: Color(0XFF2CB3BF),
-                                                                                splashColor: Colors.blue,
-                                                                                onPressed: () {
-                                                                                  Navigator.of(context).pop();
-                                                                                },
-                                                                                child: Text(
-                                                                                  'NO',
-                                                                                  style: TextStyle(fontSize: 18 * MediaQuery.of(context).textScaleFactor, fontFamily: "Proxima Nova", fontWeight: FontWeight.w600),
-                                                                                ),
-                                                                              ),
+                                                                            SizedBox(
+                                                                              height: 25,
                                                                             ),
+                                                                            Row(
+                                                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                              children: [
+                                                                                ButtonTheme(
+                                                                                  minWidth: MediaQuery.of(context).size.width * 0.28,
+                                                                                  height: MediaQuery.of(context).size.width * 0.13,
+                                                                                  child: RaisedButton(
+                                                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0), side: BorderSide(color: Color(0XFF2CB3BF))),
+                                                                                    textColor: Colors.white,
+                                                                                    color: Color(0XFF2CB3BF),
+                                                                                    splashColor: Colors.blue,
+                                                                                    onPressed: () async {
+                                                                                      setState(() {
+                                                                                        Provider.of<ApiManager>(context, listen: false).removeWorkoutApi(data[index].id.toString());
+                                                                                        Navigator.pop(context);
+                                                                                      });
+                                                                                    },
+                                                                                    child: Text(
+                                                                                      'YES',
+                                                                                      style: TextStyle(fontSize: 18 * MediaQuery.of(context).textScaleFactor, fontFamily: "Proxima Nova", fontWeight: FontWeight.w600),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                                ButtonTheme(
+                                                                                  minWidth: MediaQuery.of(context).size.width * 0.28,
+                                                                                  height: MediaQuery.of(context).size.width * 0.13,
+                                                                                  child: RaisedButton(
+                                                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0), side: BorderSide(color: Color(0XFF2CB3BF))),
+                                                                                    textColor: Colors.white,
+                                                                                    color: Color(0XFF2CB3BF),
+                                                                                    splashColor: Colors.blue,
+                                                                                    onPressed: () {
+                                                                                      Navigator.of(context).pop();
+                                                                                    },
+                                                                                    child: Text(
+                                                                                      'NO',
+                                                                                      style: TextStyle(fontSize: 18 * MediaQuery.of(context).textScaleFactor, fontFamily: "Proxima Nova", fontWeight: FontWeight.w600),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            )
                                                                           ],
-                                                                        )
-                                                                      ],
+                                                                        ),
+                                                                      ),
                                                                     ),
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            });
-                                                          });
-                                                    },
-                                                    child: Card(
-                                                        child: Icon(
-                                                      Icons.delete,
-                                                      size: 35,
-                                                    ))),
-                                              ),
-                                              Positioned(
-                                                  bottom: 15,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 13),
-                                                    child: Text(
-                                                      data[index].name,
-                                                      style: TextStyle(
-                                                          fontSize: 18,
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    ),
-                                                  )),
+                                                                  );
+                                                                });
+                                                              });
+                                                        },
+                                                        child: Card(
+                                                            child: Icon(
+                                                          Icons.delete,
+                                                          size: 35,
+                                                        ))),
+                                                  ),
+                                                  Positioned(
+                                                      bottom: 15,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(left: 13),
+                                                        child: Text(
+                                                          data[index].name,
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        ),
+                                                      )),
 
-                                              /*Positioned(
+                                                  /*Positioned(
                               top: 15,
                               right: 15,
                               child: Padding(
@@ -321,12 +376,12 @@ class _SubCategoryState extends State<SubCategory> {
                                     fontWeight: FontWeight.w600
                                 ),),
                               ),),*/
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                              );
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }),
+                                  );
                       } else {
                         return Center(
                           child: Text(

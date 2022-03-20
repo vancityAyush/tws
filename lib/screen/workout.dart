@@ -143,9 +143,13 @@ class _WorkOutState extends State<WorkOut> {
                                     return GestureDetector(
                                       onTap: () async {
                                         Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    SubCategory()));
+                                          MaterialPageRoute(
+                                            builder: (context) => SubCategory(
+                                              name: data[index].name,
+                                              desc: data[index].description,
+                                            ),
+                                          ),
+                                        );
                                         await SharedPrefManager.savePrefString(
                                             AppConstant.WORKOUTID,
                                             response.data[index].id);

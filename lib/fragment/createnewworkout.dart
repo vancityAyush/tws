@@ -19,6 +19,9 @@ class _CreateNewWorkOutState extends State<CreateNewWorkOut> {
   bool _isLoad = false;
   List<String> createDate = [];
   int flag = 0;
+  DateTime today =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  List<Data> dataList;
 
   @override
   void initState() {
@@ -36,24 +39,15 @@ class _CreateNewWorkOutState extends State<CreateNewWorkOut> {
   }
 
   void _trySubmit() async {
-    var future =
-        Provider.of<ApiManager>(context, listen: false).fetchCleintWorkoutApi();
-    future.then((value) {
-      setState(() {
-        createDate.clear();
-        flag = 0;
-        for (int i = 0; i < value.data.length; i++) {
-          createDate.add(value.data[i].fromDate);
-          if (createDate[i].contains(formatDate(
-              DateTime(selectedDate.year, selectedDate.month, selectedDate.day),
-              [yyyy, '-', mm, '-', dd]).toString())) {
-            Fluttertoast.showToast(msg: "Already created");
-            flag = 1;
-            print("kkkkkkkkkkkkkkkkkkkkkk");
-          }
-        }
-      });
-    });
+    for (int i = 0; i < dataList.length; i++) {
+      createDate.add(dataList[i].fromDate);
+      if (createDate[i].contains(formatDate(
+          DateTime(selectedDate.year, selectedDate.month, selectedDate.day),
+          [yyyy, '-', mm, '-', dd]).toString())) {
+        flag = 1;
+        break;
+      }
+    }
     if (formatDates == null) {
       Fluttertoast.showToast(msg: "Select date", gravity: ToastGravity.BOTTOM);
     } else if (workOutController.text.isEmpty) {
@@ -69,7 +63,9 @@ class _CreateNewWorkOutState extends State<CreateNewWorkOut> {
         });
         await Provider.of<ApiManager>(context, listen: false)
             .createNewWorkOutApi(workOutController.text,
-                selectedDate.toString(), selectedDate.toString());
+                selectedDate.toString(), selectedDate.toString())
+            .then((value) => Fluttertoast.showToast(
+                msg: "Workout Created", gravity: ToastGravity.BOTTOM));
         tag = "CreateMeal";
         workOutController.clear();
         setState(() {
@@ -330,7 +326,7 @@ class _CreateNewWorkOutState extends State<CreateNewWorkOut> {
                   } else {
                     if (snapshots.hasData) {
                       ResponseFetchClientWorkout response = snapshots.data;
-                      List<Data> data = response.data;
+                      dataList = response.data;
                       return Container(
                         padding: EdgeInsets.all(15),
                         margin: EdgeInsets.only(
@@ -346,63 +342,77 @@ class _CreateNewWorkOutState extends State<CreateNewWorkOut> {
                               ),
                             ],
                             borderRadius: BorderRadius.circular(20)),
-                        child: ListView.separated(
+                        child: ListView(
                           shrinkWrap: true,
-                          itemCount: data.length,
                           physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              onTap: () async {
-                                await SharedPrefManager.savePrefString(
-                                    AppConstant.CREATEWORKOUTID,
-                                    data[index].id);
-                                await SharedPrefManager.savePrefString(
-                                    AppConstant.DATE, data[index].fromDate);
-                                await SharedPrefManager.savePrefString(
-                                    AppConstant.WORKOUTTITLE,
-                                    data[index].title);
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => AddExerCise()));
+                          children: [
+                            for (Data data in dataList)
+                              if (DateTime.parse(data.fromDate)
+                                      .isAfter(today) ||
+                                  DateTime.parse(data.fromDate)
+                                      .isAtSameMomentAs(today))
+                                Column(
+                                  children: [
+                                    ListTile(
+                                      onTap: () async {
+                                        await SharedPrefManager.savePrefString(
+                                            AppConstant.CREATEWORKOUTID,
+                                            data.id);
+                                        await SharedPrefManager.savePrefString(
+                                            AppConstant.DATE, data.fromDate);
+                                        await SharedPrefManager.savePrefString(
+                                            AppConstant.WORKOUTTITLE,
+                                            data.title);
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AddExerCise()));
 
-                                // Navigator.of(context).push(MaterialPageRoute(builder: (context) => NewWorkOutTemplate()));
-                              },
-                              title: Text(
-                                data[index].title,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                              trailing: Icon(Icons.arrow_forward_ios_rounded),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    data[index].fromDate,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.normal,
+                                        // Navigator.of(context).push(MaterialPageRoute(builder: (context) => NewWorkOutTemplate()));
+                                      },
+                                      title: Text(
+                                        data.title,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      ),
+                                      trailing:
+                                          Icon(Icons.arrow_forward_ios_rounded),
+                                      subtitle: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            data.fromDate,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.black87,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Click to add exercises",
+                                            style: TextStyle(
+                                                color: Color(0XFF2CB3BF),
+                                                fontSize: 14 *
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    "Click to add exercises",
-                                    style: TextStyle(
-                                        color: Color(0XFF2CB3BF),
-                                        fontSize: 14 *
-                                            MediaQuery.of(context)
-                                                .textScaleFactor,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return Divider();
-                          },
+                                    Divider(
+                                      height: 1,
+                                      color: Colors.grey,
+                                    ),
+                                  ],
+                                )
+                          ],
                         ),
                       );
                     } else {
