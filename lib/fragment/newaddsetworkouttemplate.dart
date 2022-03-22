@@ -1,4 +1,5 @@
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tws/apiService/AppConstant.dart';
@@ -62,8 +63,11 @@ class _NewAddWorkoutTemplateState extends State<NewAddWorkoutTemplate> {
   TextEditingController totalLevelController = new TextEditingController();
   TextEditingController totalTimeController = new TextEditingController();
   TextEditingController timeControllerCycling = new TextEditingController();
-  String intensityCycling,intensityTrademil,setType = "Normal";
+  String intensityCycling,setType = "Normal";
+  String intensityTrademil="Running";
   bool _isLoad = false,_isLoadCross = false,_isLoadCycling = false;
+
+  Duration resultingDuration = Duration(minutes: 30);
 
   void _trySubmitTrademill() async{
     var date = await SharedPrefManager.getPrefrenceString(AppConstant.DATE);
@@ -460,30 +464,63 @@ class _NewAddWorkoutTemplateState extends State<NewAddWorkoutTemplate> {
                                                                     Text('Trademil', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
                                                                     SizedBox(height: 25,),
 
-                                                                    Align(
-                                                                        alignment: Alignment.centerLeft,
-                                                                        child: Text('Total Km', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),)),
-                                                                    SizedBox(height: 8,),
-
-                                                                    TextFormField(
-                                                                      controller: trademilController,
-                                                                      autovalidateMode: AutovalidateMode.always,
-                                                                      keyboardType: TextInputType.number,
-                                                                      style: TextStyle(color: Color(0XFF262626)),
-                                                                      decoration: InputDecoration(fillColor: Color(0XFFF2F2F2), filled: true,
-                                                                        border: InputBorder.none,
-                                                                        hintText: "Km",
-                                                                      ),
-                                                                      // decoration: const InputDecoration(
-                                                                      //   hintText: 'Bio',
-                                                                      //   labelText: 'Bio',
-                                                                      //
-                                                                      // ),
-                                                                      onSaved: (String value) {
-                                                                        // This optional block of code can be used to run
-                                                                        // code when the user saves the form.
+                                                                    GestureDetector(
+                                                                      onTap: ()async{
+                                                                        resultingDuration = await showDurationPicker(
+                                                                          context: context,
+                                                                          initialTime: resultingDuration,
+                                                                        );
+                                                                        setState(() {
+                                                                          resultingDuration = resultingDuration;
+                                                                        });
                                                                       },
+                                                                      child: Card(
+                                                                        elevation: 3,
+                                                                        child: Container(
+                                                                          width: double.infinity,
+                                                                          height: 50,
+                                                                          padding: EdgeInsets.all(10),
+                                                                          decoration: BoxDecoration(
+                                                                              color: Colors.white,
+                                                                              borderRadius: BorderRadius.circular(7.0),
+                                                                              boxShadow: [
+                                                                                BoxShadow(
+                                                                                    color: Colors.grey[300],
+                                                                                    offset: Offset(0.0, 1.0),
+                                                                                    blurRadius: 6.0,
+                                                                                  ),
+                                                                              ]
+                                                                          ),
+                                                                          child: Row(
+                                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              Text('Duration', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+                                                                              Text('${resultingDuration.inMinutes} mins', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ),
                                                                     ),
+                                                                    SizedBox(height: 8,),
+                                                                    // TextFormField(
+                                                                    //   controller: trademilController,
+                                                                    //   autovalidateMode: AutovalidateMode.always,
+                                                                    //   keyboardType: TextInputType.number,
+                                                                    //   style: TextStyle(color: Color(0XFF262626)),
+                                                                    //   decoration: InputDecoration(fillColor: Color(0XFFF2F2F2), filled: true,
+                                                                    //     border: InputBorder.none,
+                                                                    //     hintText: "Time in minutes",
+                                                                    //   ),
+                                                                    //   // decoration: const InputDecoration(
+                                                                    //   //   hintText: 'Bio',
+                                                                    //   //   labelText: 'Bio',
+                                                                    //   //
+                                                                    //   // ),
+                                                                    //   onSaved: (String value) {
+                                                                    //     // This optional block of code can be used to run
+                                                                    //     // code when the user saves the form.
+                                                                    //   },
+                                                                    // ),
 
                                                                     SizedBox(height: 8,),
 
@@ -493,7 +530,7 @@ class _NewAddWorkoutTemplateState extends State<NewAddWorkoutTemplate> {
 
                                                                     new DropdownButton<String>(
                                                                       isExpanded: true,
-                                                                      items: <String>['SLOW', 'MEDIUM', 'FAST'].map((String value) {
+                                                                      items: <String>['Running', 'Walking', 'Jogging'].map((String value) {
                                                                         return new DropdownMenuItem<String>(
                                                                           value: value,
                                                                           child: new Text(value),
@@ -599,21 +636,44 @@ class _NewAddWorkoutTemplateState extends State<NewAddWorkoutTemplate> {
                                                                 Text('Cycling', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
                                                                 SizedBox(height: 25,),
 
-                                                                Align(
-                                                                    alignment: Alignment.centerLeft,
-                                                                    child: Text('Total Km', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),)),
                                                                 SizedBox(height: 8,),
 
-                                                                TextFormField(
-                                                                  controller: cyclingController,
-                                                                  autovalidateMode: AutovalidateMode.always,
-                                                                  keyboardType: TextInputType.number,
-                                                                  style: TextStyle(color: Color(0XFF262626)),
-                                                                  decoration: InputDecoration(fillColor: Color(0XFFF2F2F2), filled: true,
-                                                                    border: InputBorder.none,
-                                                                    hintText: "Km",
+                                                                GestureDetector(
+                                                                  onTap: ()async{
+                                                                    resultingDuration = await showDurationPicker(
+                                                                      context: context,
+                                                                      initialTime: resultingDuration,
+                                                                    );
+                                                                    setState(() {
+                                                                      resultingDuration = resultingDuration;
+                                                                    });
+                                                                  },
+                                                                  child: Card(
+                                                                    elevation: 3,
+                                                                    child: Container(
+                                                                      width: double.infinity,
+                                                                      height: 50,
+                                                                      padding: EdgeInsets.all(10),
+                                                                      decoration: BoxDecoration(
+                                                                          color: Colors.white,
+                                                                          borderRadius: BorderRadius.circular(7.0),
+                                                                          boxShadow: [
+                                                                            BoxShadow(
+                                                                              color: Colors.grey[300],
+                                                                              offset: Offset(0.0, 1.0),
+                                                                              blurRadius: 6.0,
+                                                                            ),
+                                                                          ]
+                                                                      ),
+                                                                      child: Row(
+                                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                        children: [
+                                                                          Text('Duration', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+                                                                          Text('${resultingDuration.inMinutes} mins', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+                                                                        ],
+                                                                      ),
+                                                                    ),
                                                                   ),
-                                                                  onSaved: (String value) {},
                                                                 ),
 
                                                                 SizedBox(height: 20,),

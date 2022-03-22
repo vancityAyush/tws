@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:tws/apiService/AppConstant.dart';
 import 'package:tws/apiService/apiResponse/ResponseFetchBlog.dart';
@@ -10,7 +11,6 @@ import 'package:tws/apiService/apiResponse/ResponseFetchMembers.dart';
 import 'package:tws/apiService/apiResponse/ResponseFetchMembership.dart';
 import 'package:tws/apiService/apiResponse/ResponseFetchUnits.dart';
 import 'package:tws/apiService/apiResponse/ResponseFetchWorkout.dart';
-import 'package:tws/apiService/apiResponse/ResponseFetchWorkoutDetails.dart';
 import 'package:tws/apiService/apiResponse/ResponseFetchWorkoutId.dart';
 import 'package:tws/apiService/apiResponse/ResponsePlans.dart';
 import 'package:tws/apiService/apiResponse/ResponseProfile.dart';
@@ -25,66 +25,68 @@ import 'apiResponse/ResponseFetchMealDiet.dart';
 import 'apiResponse/ResponseQuestion.dart';
 
 class APIRepository {
-
   DioClient dioClient;
   String _baseUrl = "http://fitnessapp.frantic.in/";
 
   APIRepository() {
     var dio = Dio();
-    dioClient = DioClient(_baseUrl, dio);}
+    dioClient = DioClient(_baseUrl, dio);
+  }
 
-    ////////////////// Login Api ////////////////////////////////
+  ////////////////// Login Api ////////////////////////////////
 
-  Future loginApi(String phone) async{
+  Future loginApi(String phone) async {
     FormData formData = new FormData.fromMap({"phone": phone});
     print(formData.fields);
-    try{
-      final response = await dioClient.post("AuthApi/login",data: formData);
+    try {
+      final response = await dioClient.post("AuthApi/login", data: formData);
       return response;
-    }catch(e){
-      print("jjjjjjjjjjjjj"+e.toString());
+    } catch (e) {
+      print("jjjjjjjjjjjjj" + e.toString());
     }
   }
 
   ////////////////// resend Api ////////////////////////////////
 
-  Future resendApi() async{
+  Future resendApi() async {
     var number = await SharedPrefManager.getPrefrenceString(AppConstant.NUMBER);
     FormData formData = new FormData.fromMap({"phone": number});
     print(formData.fields);
-    try{
-      final response = await dioClient.post("AuthApi/login",data: formData);
+    try {
+      final response = await dioClient.post("AuthApi/login", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   /////////////////// Verify Otp//////////////////////////////
 
-  Future verifyOtpApi(String phone,String otp) async{
-    FormData formData = new FormData.fromMap({"phone": phone,"otp":otp});
+  Future verifyOtpApi(String phone, String otp) async {
+    FormData formData = new FormData.fromMap({"phone": phone, "otp": otp});
     print(formData.fields);
-    try{
-      final response = await dioClient.post("AuthApi/verify_otp",data: formData);
+    try {
+      final response =
+          await dioClient.post("AuthApi/verify_otp", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   /////////////////// RegisterApi//////////////////////////////
 
-  Future registerApi(String email,String name) async{
+  Future registerApi(String email, String name) async {
     var phone = await SharedPrefManager.getPrefrenceString(AppConstant.NUMBER);
-    FormData formData = new FormData.fromMap({"phone": phone,"email":email,"name":name,"user_type":"TRAINER"});
+    FormData formData = new FormData.fromMap(
+        {"phone": phone, "email": email, "name": name, "user_type": "TRAINER"});
     print(formData.fields);
-    try{
-      final response = await dioClient.post("AuthApi/register",data: formData);
+    try {
+      final response = await dioClient.post("AuthApi/register", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////////////add CategoryApi/////////////
 
-  Future addWorkOutApi(String categoryName,String description,File filename) async{
+  Future addWorkOutApi(
+      String categoryName, String description, File filename) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
@@ -93,47 +95,52 @@ class APIRepository {
       "image": MultipartFile.fromFileSync(filename.path)
     });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/add_workout",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/add_workout", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////////////fetchWorkOutApi/////////////
 
-  Future<ResponseFetchWorkOut> fetchWorkOutApi() async{
+  Future<ResponseFetchWorkOut> fetchWorkOutApi() async {
     ResponseFetchWorkOut responseFetchWorkOut;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
 
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_workout",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/fetch_workout", data: formData);
       responseFetchWorkOut = ResponseFetchWorkOut.fromJson(response);
       return responseFetchWorkOut;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ////////////////////////fetchProfileApi/////////////
 
-  Future<ResponseProfile> fetchProfileApi() async{
+  Future<ResponseProfile> fetchProfileApi() async {
     ResponseProfile responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/profile",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/profile", data: formData);
       responseProfile = ResponseProfile.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////////////add Member Api////////////////////////////////////
 
-  Future addMemberApi(String memberName,String experience,String designation) async{
+  Future addMemberApi(
+      String memberName, String experience, String designation) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
@@ -142,49 +149,55 @@ class APIRepository {
       "designation": designation
     });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/add_member",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/add_member", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ///////////////////////////////edit Profile Api////////////////////////////////////
 
-  Future editProfileApi(File file,String bio,String address,String aadhaarCard) async{
+  Future editProfileApi(
+      File file, String bio, String address, String aadhaarCard) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
       "image": MultipartFile.fromFileSync(file.path),
       "bio": bio,
       "address": address,
-      "aadhaar_card": aadhaarCard});
+      "aadhaar_card": aadhaarCard
+    });
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/edit_profile",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/edit_profile", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
-  Future editProfileApiImage(File file,String bio,String address,String aadhaarCard) async{
+  Future editProfileApiImage(
+      File file, String bio, String address, String aadhaarCard) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
       "bio": bio,
       "address": address,
-      "aadhaar_card": aadhaarCard});
+      "aadhaar_card": aadhaarCard
+    });
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/edit_profile",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/edit_profile", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
-  Future privacyStatus(String status) async{
+  Future privacyStatus(String status) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
@@ -193,16 +206,23 @@ class APIRepository {
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/edit_profile",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/edit_profile", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ///////////////////////////////add Payemnt Details Api////////////////////////////////////
 
-  Future addPaymentDetails(File file,String paymentType,String accountHolderName,String bankName,String ifsc,String branch,String upi) async{
+  Future addPaymentDetails(
+      File file,
+      String paymentType,
+      String accountHolderName,
+      String bankName,
+      String ifsc,
+      String branch,
+      String upi) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
@@ -212,17 +232,26 @@ class APIRepository {
       // "bank_name": bankName,
       // "ifsc": ifsc,
       // "branch": branch,
-      "upi": upi});
+      "upi": upi
+    });
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/edit_profile",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/edit_profile", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
-  Future addPaymentDetailsCheque(File file,String paymentType,String accountHolderName,String bankName,String ifsc,String branch,String upi) async{
+  Future addPaymentDetailsCheque(
+      File file,
+      String paymentType,
+      String accountHolderName,
+      String bankName,
+      String ifsc,
+      String branch,
+      String upi) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
@@ -231,147 +260,166 @@ class APIRepository {
       "account_holder_name": accountHolderName,
       "bank_name": bankName,
       "ifsc": ifsc,
-      "branch": branch});
+      "branch": branch
+    });
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/edit_profile",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/edit_profile", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchUnits Api
 
-  Future<ResponseFetchUnits> fetchUnitApi() async{
+  Future<ResponseFetchUnits> fetchUnitApi() async {
     ResponseFetchUnits responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_units",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/fetch_units", data: formData);
       responseProfile = ResponseFetchUnits.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchOrganization Api /////////////////////
 
-  Future<ResponseFetchCertificateType> fetchOrganisationApi() async{
+  Future<ResponseFetchCertificateType> fetchOrganisationApi() async {
     ResponseFetchCertificateType responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_organization",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/fetch_organization",
+          data: formData);
       responseProfile = ResponseFetchCertificateType.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchCertificateTypeApi Api /////////////////////
 
-  Future<ResponseFetchCertificateType> fetchCertificateTypeApi() async{
+  Future<ResponseFetchCertificateType> fetchCertificateTypeApi() async {
     ResponseFetchCertificateType responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_certificate_type",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/fetch_certificate_type", data: formData);
       responseProfile = ResponseFetchCertificateType.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchPlans Api /////////////////////
 
-  Future<ResponsePlans> fetchPlansApi() async{
+  Future<ResponsePlans> fetchPlansApi() async {
     ResponsePlans responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_plans",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/fetch_plans", data: formData);
       responseProfile = ResponsePlans.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchCertificateApi Api /////////////////////
 
-  Future<ResponseFetchCertificate> fetchCertificateApi() async{
+  Future<ResponseFetchCertificate> fetchCertificateApi() async {
     ResponseFetchCertificate responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_certificate",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/fetch_certificate",
+          data: formData);
       responseProfile = ResponseFetchCertificate.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ///////////////////////////////new Certificate Api////////////////////////////////////
 
-  Future newCertificateApi(File file,String certificateTye,String organisationName,String description) async{
+  Future newCertificateApi(File file, String certificateTye,
+      String organisationName, String description) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
       "image": MultipartFile.fromFileSync(file.path),
       "certificate_type": certificateTye,
       "organisation_name": organisationName,
-      "description": description});
+      "description": description
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/new_certificate",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/new_certificate",
+          data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ///////////////////////////////add Transformation Api////////////////////////////////////
 
-  Future addTransformationApi(File file,String description) async{
+  Future addTransformationApi(File file, String description) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
       "image": MultipartFile.fromFileSync(file.path),
-      "description": description});
+      "description": description
+    });
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/new_transformation",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/new_transformation",
+          data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchTransformation Api /////////////////////
 
-  Future<ResponseFetchTransformation> fetchTransformation() async{
+  Future<ResponseFetchTransformation> fetchTransformation() async {
     ResponseFetchTransformation responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_transformation",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/fetch_transformation", data: formData);
       responseProfile = ResponseFetchTransformation.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   /////////////////////addNew exercise/////////////////////////////
 
-  Future addNewExerCiseApi(File file,String name,String description,selectUnit) async{
+  Future addNewExerCiseApi(
+      File file, String name, String description, selectUnit) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var workoutId = await SharedPrefManager.getPrefrenceString(AppConstant.WORKOUTID);
+    var workoutId =
+        await SharedPrefManager.getPrefrenceString(AppConstant.WORKOUTID);
     FormData formData = new FormData.fromMap({
       "key": key,
       "video": MultipartFile.fromFileSync(file.path),
@@ -384,54 +432,59 @@ class APIRepository {
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/add_exercise",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/add_exercise", data: formData);
       return response;
-    }catch(e){}
-
+    } catch (e) {}
   }
 
   /////////////////////add YoutubeLink Api/////////////////////////////
 
-  Future addYoutubeLinkApi(String name,String description,String youtubelink ,selectUnit) async{
+  Future addYoutubeLinkApi(
+      String name, String description, String youtubelink, selectUnit) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var workoutId = await SharedPrefManager.getPrefrenceString(AppConstant.WORKOUTID);
+    var workoutId =
+        await SharedPrefManager.getPrefrenceString(AppConstant.WORKOUTID);
     FormData formData = new FormData.fromMap({
       "key": key,
       "name": name,
       "description": description,
       "you_tube_link": youtubelink,
       "selected_unit": selectUnit,
-      "workout_id": workoutId,});
+      "workout_id": workoutId,
+    });
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/add_exercise",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/add_exercise", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////////////// Fetch Category Id ///////////////////////////////
 
-  Future<ResponseFetchWorkoutCategoryId> fetchExerCiseByWorkOutId() async{
+  Future<ResponseFetchWorkoutCategoryId> fetchExerCiseByWorkOutId() async {
     ResponseFetchWorkoutCategoryId responseFetchWorkOut;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var workOutId = await SharedPrefManager.getPrefrenceString(AppConstant.WORKOUTID);
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "workout_id": workOutId});
+    var workOutId =
+        await SharedPrefManager.getPrefrenceString(AppConstant.WORKOUTID);
+    FormData formData =
+        new FormData.fromMap({"key": key, "workout_id": workOutId});
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_exercise_by_workout_id",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/fetch_exercise_by_workout_id", data: formData);
       responseFetchWorkOut = ResponseFetchWorkoutCategoryId.fromJson(response);
       return responseFetchWorkOut;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////////////addMembership Package Api////////////////////////////////////
 
-  Future addMembershipPackageApi(String plan,String price,String name) async{
+  Future addMembershipPackageApi(String plan, String price, String name) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
@@ -440,16 +493,16 @@ class APIRepository {
       "price": price,
     });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/add_membership_package",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/add_membership_package", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ///////////////////////////////editMembership Package Api////////////////////////////////////
 
-  Future editMembershipApi(String plan,String price,String id) async{
+  Future editMembershipApi(String plan, String price, String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
@@ -458,73 +511,88 @@ class APIRepository {
       "id": id,
     });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/edit_membership_package",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/edit_membership_package", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchMembershipPackage Api /////////////////////
 
-  Future<ResponseFetchMembership> fetchMembershipPackage() async{
+  Future<ResponseFetchMembership> fetchMembershipPackage() async {
     ResponseFetchMembership responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_membership_package",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/fetch_membership_package", data: formData);
       responseProfile = ResponseFetchMembership.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////////////create Blog APi////////////////////////////////////
 
-  Future createBlogApi(String title,String description,File file,String link,String dropDownValue) async{
+  Future createBlogApi(String title, String description, File file, String link,
+      String dropDownValue) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData;
-    if(dropDownValue == "Image"){
-       formData = new FormData.fromMap({
+    if (dropDownValue == "Image") {
+      formData = new FormData.fromMap({
         "key": key,
         "title": title,
         "description": description,
         "link": "",
-        "video": MultipartFile.fromFileSync(file.path)});
-    }else{
+        "video": MultipartFile.fromFileSync(file.path)
+      });
+    } else {
       formData = new FormData.fromMap({
-         "key": key,
+        "key": key,
         "title": title,
         "description": description,
-        "link": link});
+        "link": link
+      });
       print(formData.fields);
     }
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/create_blog",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/create_blog", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchBlog Api /////////////////////
 
-  Future<ResponseFetchBlog> fetchBlogApi() async{
+  Future<ResponseFetchBlog> fetchBlogApi() async {
     ResponseFetchBlog responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_blog_by_user_id",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/fetch_blog_by_user_id", data: formData);
       responseProfile = ResponseFetchBlog.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ///////////////////////////////create Appointment APi////////////////////////////////////
 
-  Future createAppointmentApi(String meetingType,String appointmentDate,String startTime,String endTime,String selectuser,String description,String link) async{
+  Future createAppointmentApi(
+      String meetingType,
+      String appointmentDate,
+      String startTime,
+      String endTime,
+      String selectuser,
+      String description,
+      String link) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
@@ -537,16 +605,24 @@ class APIRepository {
       "meet_link": link,
     });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/create_appointment",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/create_appointment",
+          data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ///////////////////////////////edit Appointment APi////////////////////////////////////
 
-  Future editAppointmentApi(String meetingType,String appointmentDate,String startTime,String endTime,String selectuser,String description,String link,String id) async{
+  Future editAppointmentApi(
+      String meetingType,
+      String appointmentDate,
+      String startTime,
+      String endTime,
+      String selectuser,
+      String description,
+      String link,
+      String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
@@ -557,49 +633,56 @@ class APIRepository {
       "selected_user": selectuser,
       "description": description,
       "meet_link": link,
-      "id": id});
+      "id": id
+    });
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/edit_appointment",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/edit_appointment",
+          data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchAppointment Api /////////////////////
 
-  Future<ResponseFetchAppointment> fetchAppointmentApi() async{
+  Future<ResponseFetchAppointment> fetchAppointmentApi() async {
     ResponseFetchAppointment responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_appointment_by_user_id",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/fetch_appointment_by_user_id", data: formData);
       responseProfile = ResponseFetchAppointment.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchMembers Api /////////////////////
 
-  Future<ResponseFetchMembers> fetchMembersApi() async{
+  Future<ResponseFetchMembers> fetchMembersApi() async {
     ResponseFetchMembers responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
-      "key": key,});
+      "key": key,
+    });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_member",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/fetch_member", data: formData);
       responseProfile = ResponseFetchMembers.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////////////edit Blog APi////////////////////////////////////
 
-  Future editBlogApi(String title,String description,File file,String id) async{
+  Future editBlogApi(
+      String title, String description, File file, String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
@@ -609,37 +692,37 @@ class APIRepository {
       "id": id,
     });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/edit_blog",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/edit_blog", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ////////////////fetch_clients Api /////////////////////
 
-  Future<ResponseFetchCleints> fetchClientsApi() async{
+  Future<ResponseFetchCleints> fetchClientsApi() async {
     ResponseFetchCleints responseProfile;
     // key
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    FormData formData = new FormData.fromMap({
-      "key": key
-    });
+    FormData formData = new FormData.fromMap({"key": key});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_clients",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/fetch_clients", data: formData);
       responseProfile = ResponseFetchCleints.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////////////create New Dieth APi////////////////////////////////////
 
-  Future createNewDietApi(String name,String fromDate,String toDate) async{
+  Future createNewDietApi(String name, String fromDate, String toDate) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var userId = await SharedPrefManager.getPrefrenceString(AppConstant.CREATEDIETUSERID);
+    var userId = await SharedPrefManager.getPrefrenceString(
+        AppConstant.CREATEDIETUSERID);
     FormData formData = new FormData.fromMap({
       "key": key,
       "name": name,
@@ -648,15 +731,17 @@ class APIRepository {
       "user_id": userId,
     });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/create_new_diet",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/create_new_diet",
+          data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////////////create New Diet APi////////////////////////////////////
 
-  Future createMealApi(String name,String mealTime,String note,String id) async{
+  Future createMealApi(
+      String name, String mealTime, String note, String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     var userId = await SharedPrefManager.getPrefrenceString(AppConstant.DIETID);
     FormData formData = new FormData.fromMap({
@@ -664,59 +749,58 @@ class APIRepository {
       "name": name,
       "meal_time": mealTime,
       "diet_id": id,
-      "note": note});
+      "note": note
+    });
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/create_meal",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/create_meal", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////////////editMeal APi////////////////////////////////////
 
-  Future editMealApi(String name,String mealTime,String mealId) async{
+  Future editMealApi(String name, String mealTime, String mealId) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     var userId = await SharedPrefManager.getPrefrenceString(AppConstant.DIETID);
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "name": name,
-      "meal_time": mealTime,
-      "id": mealId});
+    FormData formData = new FormData.fromMap(
+        {"key": key, "name": name, "meal_time": mealTime, "id": mealId});
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/edit_meal",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/edit_meal", data: formData);
 
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ////////////////fetchMealApi /////////////////////
 
-  Future<ResponseFetchMeal> fetchMealApi(String k) async{
+  Future<ResponseFetchMeal> fetchMealApi(String k) async {
     ResponseFetchMeal responseProfile;
 
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     var id = await SharedPrefManager.getPrefrenceString(AppConstant.DIETID);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "diet_id" : k});
+    FormData formData = new FormData.fromMap({"key": key, "diet_id": k});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_meal_by_diet_id",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/fetch_meal_by_diet_id", data: formData);
       responseProfile = ResponseFetchMeal.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////////////add Foods Api////////////////////////////////////
 
-  Future addFoodApi(String name,String protein,String carb,String fats) async{
+  Future addFoodApi(
+      String name, String protein, String carb, String fats) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     FormData formData = new FormData.fromMap({
       "key": key,
@@ -726,33 +810,35 @@ class APIRepository {
       "fats": fats,
     });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/add_food",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/add_food", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////////////add Foods to Meal Api////////////////////////////////////
 
-  Future addFoodToMealApi(String id,String mealId) async{
+  Future addFoodToMealApi(String id, String mealId) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
     // var
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "meal_id": mealId,
-      "food_id": id});
+    FormData formData =
+        new FormData.fromMap({"key": key, "meal_id": mealId, "food_id": id});
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/add_food_to_meal",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/add_food_to_meal",
+          data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////////////create New WorkOut APi////////////////////////////////////
 
-  Future createClientWorkOutApi(String name,String fromDate,String toDate) async{
+  Future createClientWorkOutApi(
+      String name, String fromDate, String toDate) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var userId = await SharedPrefManager.getPrefrenceString(AppConstant.CREATEDIETUSERID);
+    var userId = await SharedPrefManager.getPrefrenceString(
+        AppConstant.CREATEDIETUSERID);
     FormData formData = new FormData.fromMap({
       "key": key,
       "name": name,
@@ -761,230 +847,214 @@ class APIRepository {
       "user_id": userId,
     });
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/create_client_workout",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/create_client_workout", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchWorkoutApi /////////////////////
 
-  Future<ResponseFetchClientWorkout> fetchCleintWorkoutApi() async{
+  Future<ResponseFetchClientWorkout> fetchCleintWorkoutApi() async {
     ResponseFetchClientWorkout responseProfile;
 
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var id = await SharedPrefManager.getPrefrenceString(AppConstant.CREATEDIETUSERID);
+    var id = await SharedPrefManager.getPrefrenceString(
+        AppConstant.CREATEDIETUSERID);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "user_id" : id});
+    FormData formData = new FormData.fromMap({"key": key, "user_id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_client_workout_by_user_id",data: formData);
+    try {
+      final response = await dioClient.post(
+          "TrainerRestApi/fetch_client_workout_by_user_id",
+          data: formData);
       responseProfile = ResponseFetchClientWorkout.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   //////////////// fetchClientWorkoutDetailsApi /////////////////////
 
-  Future reviewWorkoutbyDatesApi(String date,String workoutId) async{
-
+  Future reviewWorkoutbyDatesApi(String date, String workoutId) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "date" : date,
-      "workout_id" : workoutId});
+    FormData formData = new FormData.fromMap(
+        {"key": key, "date": date, "workout_id": workoutId});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/review_workout_by_dates",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/review_workout_by_dates", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchExerciseByUserId /////////////////////
 
-  Future<ResponseFetchExerciseByUserId> fetchExerciseByUserId() async{
+  Future<ResponseFetchExerciseByUserId> fetchExerciseByUserId() async {
     ResponseFetchExerciseByUserId responseProfile;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    FormData formData = new FormData.fromMap({
-      "key": key
-    });
+    FormData formData = new FormData.fromMap({"key": key});
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/fetch_exercise_by_user_id",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/fetch_exercise_by_user_id", data: formData);
       responseProfile = ResponseFetchExerciseByUserId.fromJson(response);
       return responseProfile;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////////////////add_exercise_to_client_workout////////////////////////////
 
-  Future addExerciseToClientWorkout(String exerciseSuperset,Set setExerciseId,Set exerciseName) async{
+  Future addExerciseToClientWorkout(
+      String exerciseSuperset, Set setExerciseId, Set exerciseName) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var id = await SharedPrefManager.getPrefrenceString(AppConstant.CREATEWORKOUTID);
+    var id =
+        await SharedPrefManager.getPrefrenceString(AppConstant.CREATEWORKOUTID);
     FormData formData = new FormData.fromMap({
       "key": key,
-      "client_workout_id" : id,
-      "exercise_superset" : exerciseSuperset,
-      "exercise_id_array[]" : setExerciseId.toList(),
-      "exercise_name_array[]" : exerciseName.toList()});
+      "client_workout_id": id,
+      "exercise_superset": exerciseSuperset,
+      "exercise_id_array[]": setExerciseId.toList(),
+      "exercise_name_array[]": exerciseName.toList()
+    });
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/add_exercise_to_client_workout",data: formData);
+    try {
+      final response = await dioClient.post(
+          "TrainerRestApi/add_exercise_to_client_workout",
+          data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////fetchExerciseByUserId /////////////////////
 
-  Future fetchWorkOutDetailsApi() async{
+  Future fetchWorkOutDetailsApi() async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var id = await SharedPrefManager.getPrefrenceString(AppConstant.CREATEWORKOUTID);
+    var id =
+        await SharedPrefManager.getPrefrenceString(AppConstant.CREATEWORKOUTID);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "client_workout_id": id});
+    FormData formData =
+        new FormData.fromMap({"key": key, "client_workout_id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/client_workout_details",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/client_workout_details", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////add_to_set Api /////////////////////
 
-  Future addTosetApi(String tag,id,String time,String setType) async{
+  Future addTosetApi(String tag, id, String time, String setType) async {
     FormData formData;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    if(tag == "time"){
+    if (tag == "time") {
       formData = new FormData.fromMap({
         "key": key,
         "trainer_workout_exercise_id": id,
         "set_type": setType,
-        "time":time,
+        "time": time,
       });
-    }else if(tag == "breath"){
+    } else if (tag == "breath") {
       formData = new FormData.fromMap({
         "key": key,
         "trainer_workout_exercise_id": id,
         "set_type": setType,
-        "breath":time,
+        "breath": time,
       });
-    }else if(tag == "reps"){
+    } else if (tag == "reps") {
       formData = new FormData.fromMap({
         "key": key,
         "trainer_workout_exercise_id": id,
         "set_type": setType,
-        "reps":time,
+        "reps": time,
       });
-    }else if(tag == "km"){
+    } else if (tag == "km") {
       formData = new FormData.fromMap({
         "key": key,
         "trainer_workout_exercise_id": id,
         "set_type": setType,
-        "km":time,
+        "km": time,
       });
     }
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/add_to_set",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/add_to_set", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////add_to_setTwoController Api /////////////////////
 
-  Future addTosettwoControllerApi(String tag,id,String level,String time,String setType) async{
+  Future addTosettwoControllerApi(
+      String tag, id, String level, String time, String setType) async {
     FormData formData;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    if(tag == "level"){
+    if (tag == "level") {
       formData = new FormData.fromMap({
         "key": key,
         "trainer_workout_exercise_id": id,
         "set_type": setType,
-        "time":time,
-        "level":level
+        "time": time,
+        "level": level
       });
-    }else if(tag == "breathwithreps"){
+    } else if (tag == "breathwithreps") {
       formData = new FormData.fromMap({
         "key": key,
         "trainer_workout_exercise_id": id,
         "set_type": setType,
-        "breath":time,
-        "reps":level
+        "breath": time,
+        "reps": level
       });
-    }else if(tag == "weightwithreps"){
+    } else if (tag == "weightwithreps") {
       formData = new FormData.fromMap({
         "key": key,
         "trainer_workout_exercise_id": id,
         "set_type": setType,
-        "kg":time,
-        "reps":level
+        "kg": time,
+        "reps": level
       });
     }
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/add_to_set",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/add_to_set", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////editToSetController Api /////////////////////
 
-  Future editToSetControllerApi(String tag,id,String level) async{
+  Future editToSetControllerApi(String tag, id, String level) async {
     FormData formData;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    if(tag == "time"){
-      formData = new FormData.fromMap({
-        "key": key,
-        "set_id": level,
-        "time" : id
-      });
-    }
-    else if(tag == "km"){
-      formData = new FormData.fromMap({
-        "key": key,
-        "set_id": level,
-        "km" : id
-      });
-    }
-    else if(tag == "level"){
-      formData = new FormData.fromMap({
-        "key": key,
-        "set_id": level,
-        "level" : id
-      });
-    }else if(tag == "breath"){
-      formData = new FormData.fromMap({
-        "key": key,
-        "set_id": level,
-        "breath" : id
-      });
-    }
-    else if(tag == "reps"){
-      formData = new FormData.fromMap({
-        "key": key,
-        "set_id": level,
-        "reps" : id
-      });
-    }
-    else if(tag == "kg"){
-      formData = new FormData.fromMap({
-        "key": key,
-        "set_id": level,
-        "kg" : id
-      });
+    if (tag == "time") {
+      formData =
+          new FormData.fromMap({"key": key, "set_id": level, "time": id});
+    } else if (tag == "km") {
+      formData = new FormData.fromMap({"key": key, "set_id": level, "km": id});
+    } else if (tag == "level") {
+      formData =
+          new FormData.fromMap({"key": key, "set_id": level, "level": id});
+    } else if (tag == "breath") {
+      formData =
+          new FormData.fromMap({"key": key, "set_id": level, "breath": id});
+    } else if (tag == "reps") {
+      formData =
+          new FormData.fromMap({"key": key, "set_id": level, "reps": id});
+    } else if (tag == "kg") {
+      formData = new FormData.fromMap({"key": key, "set_id": level, "kg": id});
     }
 /*    else if(tag == "breathwithreps"){
       formData = new FormData.fromMap({
@@ -1002,201 +1072,186 @@ class APIRepository {
       });
     }*/
     print(formData.fields);
-    try{
-      final response = await dioClient.post("TrainerRestApi/edit_to_set",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/edit_to_set", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ////////////////////remove exercise /////////////////
 
-  Future removeExerCiseApi(String id) async{
-
+  Future removeExerCiseApi(String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "id": id});
+    FormData formData = new FormData.fromMap({"key": key, "id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/remove_client_exercise",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/remove_client_exercise", data: formData);
 
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////////remove mealApi /////////////////
 
-  Future removeMealApi(String id) async{
-
+  Future removeMealApi(String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "id": id});
+    FormData formData = new FormData.fromMap({"key": key, "id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/remove_meal",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/remove_meal", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////////remove foodApi /////////////////
 
-  Future removeFoodApi(String id,String mealId) async{
+  Future removeFoodApi(String id, String mealId) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "id": id,
-      "meal_id":mealId
-    });
+    FormData formData =
+        new FormData.fromMap({"key": key, "id": id, "meal_id": mealId});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/remove_food",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/remove_food", data: formData);
 
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////////remove Feeds /////////////////
 
-  Future removeFeedsApi(String id) async{
+  Future removeFeedsApi(String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "id": id});
+    FormData formData = new FormData.fromMap({"key": key, "id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/remove_blog",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/remove_blog", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////////remove Appointment /////////////////
 
-  Future removeAppointmentApi(String id) async{
+  Future removeAppointmentApi(String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "id": id});
+    FormData formData = new FormData.fromMap({"key": key, "id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/remove_appointment",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/remove_appointment",
+          data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////////remove exercise /////////////////
 
-  Future removePackageApi(String id) async{
-
+  Future removePackageApi(String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "id": id});
+    FormData formData = new FormData.fromMap({"key": key, "id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/delete_membership_package",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/delete_membership_package", data: formData);
 
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ////////////// remove Member Api ///////////////
 
-  Future removeMemberApi(String id) async{
+  Future removeMemberApi(String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "id": id});
+    FormData formData = new FormData.fromMap({"key": key, "id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/remove_member",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/remove_member", data: formData);
 
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////////dietListApi /////////////////
 
-  Future dietListApi() async{
-
+  Future dietListApi() async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var clientId = await SharedPrefManager.getPrefrenceString(AppConstant.CREATEDIETUSERID);
+    var clientId = await SharedPrefManager.getPrefrenceString(
+        AppConstant.CREATEDIETUSERID);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "user_id": clientId});
+    FormData formData = new FormData.fromMap({"key": key, "user_id": clientId});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/diet_list",data: formData);
+    try {
+      final response =
+          await dioClient.post("TrainerRestApi/diet_list", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ////////////////////reviewDietDatesApi /////////////////
 
-  Future reviewDietDatesApi(String id) async{
-
+  Future reviewDietDatesApi(String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "diet_id": id});
+    FormData formData = new FormData.fromMap({"key": key, "diet_id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/review_diet_dates",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/review_diet_dates",
+          data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ////////////////////reviewDietByDatesApi/////////////////
 
-  Future reviewDietByDatesApi(String id,String date) async{
+  Future reviewDietByDatesApi(String id, String date) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "diet_id": id,
-      "date": date});
+    FormData formData =
+        new FormData.fromMap({"key": key, "diet_id": id, "date": date});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/review_diet_by_dates",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/review_diet_by_dates", data: formData);
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
   ///////////////////////// beforeexercise //////////////////////////////////////////////
 
-  Future beforExerciseApi(String fromDate,String toDate,String exercise,String set,String set1) async {
-
+  Future beforExerciseApi(String fromDate, String toDate, String exercise,
+      String set, String set1) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var trainerId = await SharedPrefManager.getPrefrenceString(AppConstant.CREATEDIETUSERID);
-    var workoutId = await SharedPrefManager.getPrefrenceString(AppConstant.CREATEWORKOUTID);
+    var trainerId = await SharedPrefManager.getPrefrenceString(
+        AppConstant.CREATEDIETUSERID);
+    var workoutId =
+        await SharedPrefManager.getPrefrenceString(AppConstant.CREATEWORKOUTID);
 
     List<String> workId = [];
     List<String> exerciseArray = [];
@@ -1218,9 +1273,11 @@ class APIRepository {
         "to_date": toDate,
         "exercise[]": exerciseArray,
         "set[]": sets,
-        "set1[]": set11});
+        "set1[]": set11
+      });
       print(formData.fields);
-      final response = await dioClient.post("TrainerRestApi/before_exercise",data: formData);
+      final response = await dioClient.post("TrainerRestApi/before_exercise",
+          data: formData);
       return response;
     } catch (e) {
       print(e);
@@ -1231,15 +1288,14 @@ class APIRepository {
 
   Future sendMessageApi(msg) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var trainerId = await SharedPrefManager.getPrefrenceString(AppConstant.CREATEDIETUSERID);
+    var trainerId = await SharedPrefManager.getPrefrenceString(
+        AppConstant.CREATEDIETUSERID);
     try {
-      FormData formData = new FormData.fromMap({
-        "key": key,
-        "msg_to": trainerId,
-        "msg": msg
-      });
+      FormData formData =
+          new FormData.fromMap({"key": key, "msg_to": trainerId, "msg": msg});
       print(formData.fields);
-      final response = await dioClient.post("TrainerRestApi/send_message",data: formData);
+      final response =
+          await dioClient.post("TrainerRestApi/send_message", data: formData);
       return response;
     } catch (e) {
       print(e);
@@ -1248,17 +1304,20 @@ class APIRepository {
 
   /////////////////////////////////New SEND MESSAGE Api////////////////////////////////////////////
 
-  Future newSendMessageApi(msg,filename) async {
+  Future newSendMessageApi(msg, filename) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var trainerId = await SharedPrefManager.getPrefrenceString(AppConstant.CREATEDIETUSERID);
+    var trainerId = await SharedPrefManager.getPrefrenceString(
+        AppConstant.CREATEDIETUSERID);
     try {
       FormData formData = new FormData.fromMap({
         "key": key,
         "msg_to": trainerId,
         "msg": "",
-        "image": MultipartFile.fromFileSync(filename.path)});
+        "image": MultipartFile.fromFileSync(filename.path)
+      });
 
-      final response = await dioClient.post("TrainerRestApi/send_message",data: formData);
+      final response =
+          await dioClient.post("TrainerRestApi/send_message", data: formData);
       return response;
     } catch (e) {
       print(e);
@@ -1271,16 +1330,17 @@ class APIRepository {
 
   Future<ResponseFetchChatMessage> fetchIndividualChat() async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    var trainerId = await SharedPrefManager.getPrefrenceString(AppConstant.CREATEDIETUSERID);
+    var trainerId = await SharedPrefManager.getPrefrenceString(
+        AppConstant.CREATEDIETUSERID);
 
     try {
-      FormData formData = new FormData.fromMap({
-        "key":key,
-        "msg_to":trainerId});
+      FormData formData =
+          new FormData.fromMap({"key": key, "msg_to": trainerId});
 
       print(formData.fields);
 
-      final response = await dioClient.post("TrainerRestApi/fetch_message",data: formData);
+      final response =
+          await dioClient.post("TrainerRestApi/fetch_message", data: formData);
       responseIndividudal = ResponseFetchChatMessage.fromJson(response);
       return responseIndividudal;
     } catch (e) {
@@ -1290,28 +1350,42 @@ class APIRepository {
 
   ////////////////////delete certificate Api /////////////////
 
-  Future deleteCertificateApi(String id) async{
-
+  Future deleteCertificateApi(String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "id": id});
+    FormData formData = new FormData.fromMap({"key": key, "id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/delete_certificate",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/delete_certificate",
+          data: formData);
 
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
 
+  ////////////////////delete workout Api /////////////////
+
+  Future deleteWorkoutApi(String id) async {
+    var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
+
+    FormData formData = new FormData.fromMap({"key": key, "id": id});
+
+    print(formData.fields);
+
+    try {
+      final response = await dioClient.post("TrainerRestApi/trainer_workout",
+          data: formData);
+
+      return response;
+    } catch (e) {}
+  }
 
   ////////////////////edit certificate Api /////////////////
 
-  Future editCertificateApi(String id,String type,description,File file,String newId) async{
-
+  Future editCertificateApi(
+      String id, String type, description, File file, String newId) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
 
     FormData formData = new FormData.fromMap({
@@ -1325,70 +1399,60 @@ class APIRepository {
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/edit_certificate",data: formData);
+    try {
+      final response = await dioClient.post("TrainerRestApi/edit_certificate",
+          data: formData);
 
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
 
   ////////////////////delete category Api /////////////////
 
-  Future deleteCategoryApi(String id) async{
-
+  Future deleteCategoryApi(String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "id": id});
+    FormData formData = new FormData.fromMap({"key": key, "id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/delete_workout_category_3",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/delete_workout_category_3", data: formData);
       return response;
-
-    }catch(e){}
-
+    } catch (e) {}
   }
 
   ////////////////////remove Client Workout Api ///////////////////////
 
-  Future removeClientWorkOutApi(String id) async{
-
+  Future removeClientWorkOutApi(String id) async {
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
 
-    FormData formData = new FormData.fromMap({
-      "key": key,
-      "id": id});
+    FormData formData = new FormData.fromMap({"key": key, "id": id});
 
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("TrainerRestApi/remove_client_workout",data: formData);
+    try {
+      final response = await dioClient
+          .post("TrainerRestApi/remove_client_workout", data: formData);
 
       return response;
-    }catch(e){}
+    } catch (e) {}
   }
-
-
 
   ////////////////////////questionApi/////////////
 
-  Future<ResponseQuestion> questionApi() async{
+  Future<ResponseQuestion> questionApi() async {
     ResponseQuestion responseQuestion;
     var key = await SharedPrefManager.getPrefrenceString(AppConstant.KEY);
-    FormData formData = new FormData.fromMap({
-      "key": key});
+    FormData formData = new FormData.fromMap({"key": key});
     print(formData.fields);
 
-    try{
-      final response = await dioClient.post("UserRestApi/fetch_question",data: formData);
+    try {
+      final response =
+          await dioClient.post("UserRestApi/fetch_question", data: formData);
       responseQuestion = ResponseQuestion.fromJson(response);
       return responseQuestion;
-    }catch(e){}
+    } catch (e) {}
   }
-
-
 }

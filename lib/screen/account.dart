@@ -57,9 +57,11 @@ class _AccountFragmentState extends State<AccountFragment> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        leading: Icon(
-          Icons.arrow_back,
-          color: Colors.white,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         backgroundColor: Color(0XFF2CB3BF),
         centerTitle: true,

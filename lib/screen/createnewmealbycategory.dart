@@ -649,34 +649,31 @@ class _CreateNewMealByCategoryState extends State<CreateNewMealByCategory> {
                                     SizedBox(
                                       height: 15,
                                     ),
-                                    if (newDate == false)
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        AddFood(
-                                                            mealId:
-                                                                data[i].meal.id,
-                                                            id: widget.id)));
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 25),
-                                            child: Text(
-                                              "+ Add Food",
-                                              style: TextStyle(
-                                                  fontSize: 15 *
-                                                      MediaQuery.of(context)
-                                                          .textScaleFactor,
-                                                  color: Color(0XFF2CB3BF),
-                                                  fontWeight: FontWeight.w600),
-                                            ),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) => AddFood(
+                                                      mealId: data[i].meal.id,
+                                                      id: widget.id)));
+                                        },
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 25),
+                                          child: Text(
+                                            "+ Add Food",
+                                            style: TextStyle(
+                                                fontSize: 15 *
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor,
+                                                color: Color(0XFF2CB3BF),
+                                                fontWeight: FontWeight.w600),
                                           ),
                                         ),
                                       ),
+                                    ),
                                     SizedBox(
                                       height: 25,
                                     ),

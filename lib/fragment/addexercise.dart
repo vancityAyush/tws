@@ -4,6 +4,8 @@ import 'package:tws/apiService/apiResponse/ResponseFetchExerciseByUserId.dart';
 import 'package:tws/apiService/apimanager.dart';
 import 'package:tws/fragment/filter.dart';
 
+import 'newaddsetworkouttemplate.dart';
+
 class AddExerCise extends StatefulWidget {
   @override
   _AddExerCiseState createState() => _AddExerCiseState();
@@ -314,6 +316,25 @@ class _AddExerCiseState extends State<AddExerCise> {
                               color: Colors.white,
                             )),
                       ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        tag = "NORMAL";
+                        // _trySubmit(tag);
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => NewAddWorkoutTemplate(
+                                exerciseSuperset: "NORMAL")));
+                      },
+                      child: CircleAvatar(
+                          radius: 26,
+                          backgroundColor: Colors.redAccent,
+                          child: Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
+                          )),
+                    ),
                   ],
                 )),
           ],

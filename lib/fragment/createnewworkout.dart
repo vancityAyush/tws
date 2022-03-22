@@ -353,7 +353,41 @@ class _CreateNewWorkOutState extends State<CreateNewWorkOut> {
                                       .isAtSameMomentAs(today))
                                 Column(
                                   children: [
-                                    ListTile(
+                                    GestureDetector(
+                                      onLongPress: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: Text("Delete"),
+                                                content: Text(
+                                                    "Are you sure you want to delete this workout?"),
+                                                actions: [
+                                                  FlatButton(
+                                                    child: Text("Cancel"),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                  FlatButton(
+                                                    child: Text("Delete"),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                      Provider.of<ApiManager>(
+                                                              context,
+                                                              listen: false)
+                                                          .deleteWorkoutApi(
+                                                              data.id)
+                                                          .then((value) =>
+                                                              setState(() {
+                                                                _isLoad = false;
+                                                              }));
+                                                    },
+                                                  )
+                                                ],
+                                              );
+                                            });
+                                      },
                                       onTap: () async {
                                         await SharedPrefManager.savePrefString(
                                             AppConstant.CREATEWORKOUTID,
@@ -370,40 +404,42 @@ class _CreateNewWorkOutState extends State<CreateNewWorkOut> {
 
                                         // Navigator.of(context).push(MaterialPageRoute(builder: (context) => NewWorkOutTemplate()));
                                       },
-                                      title: Text(
-                                        data.title,
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.black87,
-                                          fontWeight: FontWeight.normal,
+                                      child: ListTile(
+                                        title: Text(
+                                          data.title,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.normal,
+                                          ),
                                         ),
-                                      ),
-                                      trailing:
-                                          Icon(Icons.arrow_forward_ios_rounded),
-                                      subtitle: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            data.fromDate,
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              color: Colors.black87,
-                                              fontWeight: FontWeight.normal,
+                                        trailing: Icon(
+                                            Icons.arrow_forward_ios_rounded),
+                                        subtitle: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              data.fromDate,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.normal,
+                                              ),
                                             ),
-                                          ),
-                                          Text(
-                                            "Click to add exercises",
-                                            style: TextStyle(
-                                                color: Color(0XFF2CB3BF),
-                                                fontSize: 14 *
-                                                    MediaQuery.of(context)
-                                                        .textScaleFactor,
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                        ],
+                                            Text(
+                                              "Click to add exercises",
+                                              style: TextStyle(
+                                                  color: Color(0XFF2CB3BF),
+                                                  fontSize: 14 *
+                                                      MediaQuery.of(context)
+                                                          .textScaleFactor,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                     Divider(

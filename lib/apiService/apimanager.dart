@@ -15,42 +15,38 @@ import 'package:tws/apiService/apiResponse/ResponseFetchMembership.dart';
 import 'package:tws/apiService/apiResponse/ResponseFetchUnits.dart';
 import 'package:tws/apiService/apiResponse/ResponseProfile.dart';
 import 'package:tws/apiService/sharedprefrence.dart';
-import 'package:tws/fragment/createnewdiet.dart';
 import 'package:tws/fragment/feedlist.dart';
 import 'package:tws/fragment/newaddsetworkouttemplate.dart';
 import 'package:tws/routing/bouncypageroute.dart';
 import 'package:tws/screen/appointmentlist.dart';
 import 'package:tws/screen/certificatelist.dart';
 import 'package:tws/screen/createnewmealbycategory.dart';
-import 'package:tws/screen/editmembershippackage.dart';
 import 'package:tws/screen/homescreen.dart';
 import 'package:tws/screen/membershippackage.dart';
 import 'package:tws/screen/otp.dart';
 import 'package:tws/screen/register.dart';
 import 'package:tws/screen/subcategory.dart';
 import 'package:tws/screen/transformationlist.dart';
-import 'package:tws/screen/workout.dart';
+
 import '../main.dart';
 import 'apiResponse/ResponseFetchCertificate.dart';
 import 'apiResponse/ResponseFetchChatMessage.dart';
 import 'apiResponse/ResponseFetchWorkout.dart';
-import 'apiResponse/ResponseFetchWorkoutDetails.dart';
 import 'apiResponse/ResponseFetchWorkoutId.dart';
 import 'apiResponse/ResponsePlans.dart';
 import 'apiResponse/ResponseQuestion.dart';
 import 'apiResponse/responsefetchtransformation.dart';
 
-class ApiManager extends ChangeNotifier{
-
+class ApiManager extends ChangeNotifier {
   APIRepository _apiRepository = APIRepository();
 
   ////////////// login Api //////////////////////
 
-  Future loginApi(String phone) async{
+  Future loginApi(String phone) async {
     await SharedPrefManager.savePrefString(AppConstant.NUMBER, phone);
     var response = await _apiRepository.loginApi(phone);
-    if(response['error_code'] == 1){
-      if(response['data']['user_type'] == "USER"){
+    if (response['error_code'] == 1) {
+      if (response['data']['user_type'] == "USER") {
         /*Fluttertoast.showToast(
             msg: "",
             toastLength: Toast.LENGTH_SHORT,
@@ -59,10 +55,13 @@ class ApiManager extends ChangeNotifier{
             backgroundColor: Colors.black,
             textColor: Colors.white,
             fontSize: 16.0);*/
-      }else{
-        navigatorKey.currentState.push(MaterialPageRoute(builder: (builder) => OtpScreen(phone:phone,otp:response['otp'].toString())));
+      } else {
+        navigatorKey.currentState.push(MaterialPageRoute(
+            builder: (builder) =>
+                OtpScreen(phone: phone, otp: response['otp'].toString())));
         // navigatorKey.currentState.push(BouncyPageRoute(widget: OtpScreen(phone:phone,otp:response['otp'].toString())));
-        await SharedPrefManager.savePrefString(AppConstant.OTP, response['otp'].toString());
+        await SharedPrefManager.savePrefString(
+            AppConstant.OTP, response['otp'].toString());
         Fluttertoast.showToast(
             msg: response['otp'].toString(),
             toastLength: Toast.LENGTH_SHORT,
@@ -72,9 +71,12 @@ class ApiManager extends ChangeNotifier{
             textColor: Colors.white,
             fontSize: 16.0);
       }
-    }else{
-      navigatorKey.currentState.push(MaterialPageRoute(builder: (builder) => OtpScreen(phone:phone,otp:response['otp'].toString())));
-      await SharedPrefManager.savePrefString(AppConstant.OTP, response['otp'].toString());
+    } else {
+      navigatorKey.currentState.push(MaterialPageRoute(
+          builder: (builder) =>
+              OtpScreen(phone: phone, otp: response['otp'].toString())));
+      await SharedPrefManager.savePrefString(
+          AppConstant.OTP, response['otp'].toString());
       Fluttertoast.showToast(
           msg: response['otp'].toString(),
           toastLength: Toast.LENGTH_SHORT,
@@ -82,17 +84,17 @@ class ApiManager extends ChangeNotifier{
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.black,
           textColor: Colors.white,
-          fontSize: 16.0
-      );
+          fontSize: 16.0);
     }
   }
 
   ////////////// resend Api //////////////////////
 
-  Future resendApi() async{
+  Future resendApi() async {
     var response = await _apiRepository.resendApi();
-    if(response['error_code'] == 1){
-      await SharedPrefManager.savePrefString(AppConstant.OTP, response['otp'].toString());
+    if (response['error_code'] == 1) {
+      await SharedPrefManager.savePrefString(
+          AppConstant.OTP, response['otp'].toString());
       Fluttertoast.showToast(
           msg: response['otp'].toString(),
           toastLength: Toast.LENGTH_SHORT,
@@ -101,8 +103,9 @@ class ApiManager extends ChangeNotifier{
           backgroundColor: Colors.black,
           textColor: Colors.white,
           fontSize: 16.0);
-    }else{
-      await SharedPrefManager.savePrefString(AppConstant.OTP, response['otp'].toString());
+    } else {
+      await SharedPrefManager.savePrefString(
+          AppConstant.OTP, response['otp'].toString());
       Fluttertoast.showToast(
           msg: response['otp'].toString(),
           toastLength: Toast.LENGTH_SHORT,
@@ -110,50 +113,51 @@ class ApiManager extends ChangeNotifier{
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.black,
           textColor: Colors.white,
-          fontSize: 16.0
-      );
-
+          fontSize: 16.0);
     }
   }
 
   ///////////// otp Api ////////////////////////
 
-  Future verifyOtp(String phone,String otp) async{
-    var response = await _apiRepository.verifyOtpApi(phone,otp);
-    if(response['error_code'] == 1){
-      if(response['response_string'] == "NEW_USER"){
-        navigatorKey.currentState.push(MaterialPageRoute(builder: (context) => RegisterScreen()));
-      }else{
-        await SharedPrefManager.savePrefString(AppConstant.KEY, response['data']['client_key'].toString());
-        navigatorKey.currentState.pushAndRemoveUntil(MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
+  Future verifyOtp(String phone, String otp) async {
+    var response = await _apiRepository.verifyOtpApi(phone, otp);
+    if (response['error_code'] == 1) {
+      if (response['response_string'] == "NEW_USER") {
+        navigatorKey.currentState
+            .push(MaterialPageRoute(builder: (context) => RegisterScreen()));
+      } else {
+        await SharedPrefManager.savePrefString(
+            AppConstant.KEY, response['data']['client_key'].toString());
+        navigatorKey.currentState.pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
         SharedPrefManager.savePreferenceBoolean(true);
       }
-    }else{
-    }
+    } else {}
   }
-
 
   ///////////// register Api ///////////////////////
 
-  Future registerApi(String email,String name) async{
-    var response = await _apiRepository.registerApi(email,name);
-    if(response['error_code'] == 1){
+  Future registerApi(String email, String name) async {
+    var response = await _apiRepository.registerApi(email, name);
+    if (response['error_code'] == 1) {
       print(response['data']['client_key'].toString());
-      await SharedPrefManager.savePrefString(AppConstant.KEY, response['data']['client_key'].toString());
-      navigatorKey.currentState.pushAndRemoveUntil(MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
+      await SharedPrefManager.savePrefString(
+          AppConstant.KEY, response['data']['client_key'].toString());
+      navigatorKey.currentState.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
       SharedPrefManager.savePreferenceBoolean(true);
-    }else{
-
-    }
+    } else {}
   }
 
   ////////////////////// add Category //////////////////////////////////
 
-  Future addCategoryApi(String categoryName,description,filename) async {
+  Future addCategoryApi(String categoryName, description, filename) async {
     try {
-      var response = await _apiRepository.addWorkOutApi(categoryName, description, filename);
+      var response = await _apiRepository.addWorkOutApi(
+          categoryName, description, filename);
       print(response['error_code'].toString());
-      navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (builder) => HomeScreen()));
+      navigatorKey.currentState.pushReplacement(
+          MaterialPageRoute(builder: (builder) => HomeScreen()));
     } catch (e) {
       print(e);
     }
@@ -175,12 +179,17 @@ class ApiManager extends ChangeNotifier{
     try {
       var response = await _apiRepository.fetchProfileApi();
 
-      if(response.errorCode == 0){}else{
-        await SharedPrefManager.savePrefString(AppConstant.USERID,response.data.id);
-        await SharedPrefManager.savePrefString(AppConstant.TRAINERCODE,response.data.referalCode);
-        await SharedPrefManager.savePrefString(AppConstant.TRAINERNAME,response.data.name);
-        if(response.data.image!=null){
-          await SharedPrefManager.savePrefString(AppConstant.TRAINERIMAGE,response.data.image);
+      if (response.errorCode == 0) {
+      } else {
+        await SharedPrefManager.savePrefString(
+            AppConstant.USERID, response.data.id);
+        await SharedPrefManager.savePrefString(
+            AppConstant.TRAINERCODE, response.data.referalCode);
+        await SharedPrefManager.savePrefString(
+            AppConstant.TRAINERNAME, response.data.name);
+        if (response.data.image != null) {
+          await SharedPrefManager.savePrefString(
+              AppConstant.TRAINERIMAGE, response.data.image);
         }
       }
       return response;
@@ -190,9 +199,11 @@ class ApiManager extends ChangeNotifier{
   }
 
   ////////////////////////////////addMember Api////////////////////////////////////
-  Future addMemberApi(String memberName,String experience,String designation) async {
+  Future addMemberApi(
+      String memberName, String experience, String designation) async {
     try {
-      var response = await _apiRepository.addMemberApi(memberName, experience, designation);
+      var response = await _apiRepository.addMemberApi(
+          memberName, experience, designation);
       return response;
     } catch (e) {
       print(e);
@@ -201,11 +212,14 @@ class ApiManager extends ChangeNotifier{
 
   ////////////////////// editProfileApi/////////////////
 
-  Future editProfileApi(filename,String bio,String address,String aadhaarCard) async {
+  Future editProfileApi(
+      filename, String bio, String address, String aadhaarCard) async {
     try {
-      var response = await _apiRepository.editProfileApi(filename, bio, address, aadhaarCard);
+      var response = await _apiRepository.editProfileApi(
+          filename, bio, address, aadhaarCard);
       Fluttertoast.showToast(msg: "Profile had been updated successfully");
-      navigatorKey.currentState.push(MaterialPageRoute(builder: (context)=> HomeScreen()));
+      navigatorKey.currentState
+          .push(MaterialPageRoute(builder: (context) => HomeScreen()));
       return response;
     } catch (e) {
       print(e);
@@ -214,11 +228,14 @@ class ApiManager extends ChangeNotifier{
 
   ////////////////////// editProfileApi/////////////////
 
-  Future editProfileApiImage(filename,String bio,String address,String aadhaarCard) async {
+  Future editProfileApiImage(
+      filename, String bio, String address, String aadhaarCard) async {
     try {
-      var response = await _apiRepository.editProfileApiImage(filename, bio, address, aadhaarCard);
+      var response = await _apiRepository.editProfileApiImage(
+          filename, bio, address, aadhaarCard);
       Fluttertoast.showToast(msg: "Profile had been updated successfully");
-      navigatorKey.currentState.push(MaterialPageRoute(builder: (context)=> HomeScreen()));
+      navigatorKey.currentState
+          .push(MaterialPageRoute(builder: (context) => HomeScreen()));
       return response;
     } catch (e) {
       print(e);
@@ -236,31 +253,49 @@ class ApiManager extends ChangeNotifier{
     }
   }
 
-
   ////////////////////// addPaymentDetailsApi//////////////////////
 
-  Future addPaymentDetailsApi(filename,String paymentType,String accountHolderName,String bankName,String ifsc,String branch,String upi) async {
+  Future addPaymentDetailsApi(
+      filename,
+      String paymentType,
+      String accountHolderName,
+      String bankName,
+      String ifsc,
+      String branch,
+      String upi) async {
     try {
-      var response = await _apiRepository.addPaymentDetails(filename, paymentType, accountHolderName, bankName, ifsc, branch, upi);
-      Fluttertoast.showToast(msg: "Payment details had been added successfully");
-      navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (builder)=> HomeScreen()));
+      var response = await _apiRepository.addPaymentDetails(filename,
+          paymentType, accountHolderName, bankName, ifsc, branch, upi);
+      Fluttertoast.showToast(
+          msg: "Payment details had been added successfully");
+      navigatorKey.currentState.pushReplacement(
+          MaterialPageRoute(builder: (builder) => HomeScreen()));
       return response;
     } catch (e) {
       print(e);
     }
   }
 
-  Future addPaymentDetailsApiCheque(filename,String paymentType,String accountHolderName,String bankName,String ifsc,String branch,String upi) async {
+  Future addPaymentDetailsApiCheque(
+      filename,
+      String paymentType,
+      String accountHolderName,
+      String bankName,
+      String ifsc,
+      String branch,
+      String upi) async {
     try {
-      var response = await _apiRepository.addPaymentDetailsCheque(filename, paymentType, accountHolderName, bankName, ifsc, branch, upi);
-      Fluttertoast.showToast(msg: "Payment details had been added successfully");
-      navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (builder)=> HomeScreen()));
+      var response = await _apiRepository.addPaymentDetailsCheque(filename,
+          paymentType, accountHolderName, bankName, ifsc, branch, upi);
+      Fluttertoast.showToast(
+          msg: "Payment details had been added successfully");
+      navigatorKey.currentState.pushReplacement(
+          MaterialPageRoute(builder: (builder) => HomeScreen()));
       return response;
     } catch (e) {
       print(e);
     }
   }
-
 
   ////////////////////// fetchUnitApi////////////////////////
 
@@ -269,33 +304,35 @@ class ApiManager extends ChangeNotifier{
       var response = await _apiRepository.fetchUnitApi();
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////////// fetchCertificateType/////////////////
 
   Future<ResponseFetchCertificateType> fetchCertificateType() async {
     try {
       var response = await _apiRepository.fetchCertificateTypeApi();
-      if(response.errorCode.toString() == "1"){
+      if (response.errorCode.toString() == "1") {
         return response;
-      }else{}
-
+      } else {}
     } catch (e) {
-      print(e);}}
-
+      print(e);
+    }
+  }
 
   ////////////////////// fetchCertificate/////////////////
 
   Future<ResponseFetchCertificate> fetchCertificateApi() async {
     try {
       var response = await _apiRepository.fetchCertificateApi();
-      if(response.errorCode.toString() == "1"){
+      if (response.errorCode.toString() == "1") {
         return response;
-      }else{
-
-      }
+      } else {}
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////////// fetchOrganizationApi/////////////////
 
@@ -304,7 +341,9 @@ class ApiManager extends ChangeNotifier{
       var response = await _apiRepository.fetchOrganisationApi();
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   /*///////////////////// add Exercise Api///////////////////
   Future addNewExercise(file,String name,description,String youtubeLink,String selectUnit) async {
@@ -319,12 +358,15 @@ class ApiManager extends ChangeNotifier{
   }*/
 
   ///////////////////// add Exercise Api///////////////////
-  Future addNewExercise(file,String name,description,String selectUnit) async {
+  Future addNewExercise(
+      file, String name, description, String selectUnit) async {
     try {
-      var response = await _apiRepository.addNewExerCiseApi(file, name, description,selectUnit);
+      var response = await _apiRepository.addNewExerCiseApi(
+          file, name, description, selectUnit);
       print(response['error_code'].toString());
-      if(response['error_code'].toString() == "1"){
-        navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (builder) => SubCategory()));
+      if (response['error_code'].toString() == "1") {
+        navigatorKey.currentState.pushReplacement(
+            MaterialPageRoute(builder: (builder) => SubCategory()));
       }
       return response;
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
@@ -334,17 +376,22 @@ class ApiManager extends ChangeNotifier{
   }
 
   ///////////////////// add YoutubeLink Api///////////////////
-  Future addNewExerciseYoutube(String name,String description,String youtubeLink,String selectUnit) async {
+  Future addNewExerciseYoutube(String name, String description,
+      String youtubeLink, String selectUnit) async {
     try {
-      var response = await _apiRepository.addYoutubeLinkApi(name, description,youtubeLink,selectUnit);
+      var response = await _apiRepository.addYoutubeLinkApi(
+          name, description, youtubeLink, selectUnit);
       print(response['error_code'].toString());
-      if(response['error_code'].toString() == "1"){
-        navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (builder) => SubCategory()));
+      if (response['error_code'].toString() == "1") {
+        navigatorKey.currentState.pushReplacement(
+            MaterialPageRoute(builder: (builder) => SubCategory()));
       }
       return response;
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////////// fetchWorkoutApi/////////////////
 
@@ -354,20 +401,25 @@ class ApiManager extends ChangeNotifier{
       return response;
     } catch (e) {
       print(e);
-    }}
+    }
+  }
 
-    ///////////////////////NewCertificateApi//////////////
+  ///////////////////////NewCertificateApi//////////////
 
-  Future newCertificateApi(file,String certificateTye,String organisationName,String description) async {
+  Future newCertificateApi(file, String certificateTye, String organisationName,
+      String description) async {
     try {
-      var response = await _apiRepository.newCertificateApi(file, certificateTye, organisationName, description);
+      var response = await _apiRepository.newCertificateApi(
+          file, certificateTye, organisationName, description);
       print(response['error_code'].toString());
 
-      if(response['error_code'].toString() == "1"){
-        navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (context) => CertificateList()));}
+      if (response['error_code'].toString() == "1") {
+        navigatorKey.currentState.pushReplacement(
+            MaterialPageRoute(builder: (context) => CertificateList()));
+      }
 
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
     } catch (e) {
       print(e);
     }
@@ -375,12 +427,13 @@ class ApiManager extends ChangeNotifier{
 
   ///////////////////////addTransformation Api//////////////
 
-  Future addTransformationApi(file,String description) async {
+  Future addTransformationApi(file, String description) async {
     try {
-      var response = await _apiRepository.addTransformationApi(file, description);
+      var response =
+          await _apiRepository.addTransformationApi(file, description);
 
-      navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (context) => TransformationList()));
-
+      navigatorKey.currentState.pushReplacement(
+          MaterialPageRoute(builder: (context) => TransformationList()));
     } catch (e) {
       print(e);
     }
@@ -391,10 +444,13 @@ class ApiManager extends ChangeNotifier{
   Future<ResponseFetchTransformation> fetchTransformationApi() async {
     try {
       var response = await _apiRepository.fetchTransformation();
-      if(response.errorCode.toString() == "1"){
-        return response;}
+      if (response.errorCode.toString() == "1") {
+        return response;
+      }
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////////// fetchPlansApi/////////////////
 
@@ -403,16 +459,19 @@ class ApiManager extends ChangeNotifier{
       var response = await _apiRepository.fetchPlansApi();
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
-      //////////////////////////add Memeber Ship Package Api////////////////////
+  //////////////////////////add Memeber Ship Package Api////////////////////
 
-  Future addMemberShipPackageApi(String plan,String price,String name) async {
+  Future addMemberShipPackageApi(String plan, String price, String name) async {
     try {
-      var response = await _apiRepository.addMembershipPackageApi(plan, price,name);
+      var response =
+          await _apiRepository.addMembershipPackageApi(plan, price, name);
       print(response['error_code'].toString());
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
     } catch (e) {
       print(e);
@@ -424,23 +483,25 @@ class ApiManager extends ChangeNotifier{
   Future<ResponseFetchMembership> fetchMemberShipPackage() async {
     try {
       var response = await _apiRepository.fetchMembershipPackage();
-      if(response.errorCode == 1){
+      if (response.errorCode == 1) {
         return response;
       }
-
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   //////////////////////edit Membership Package Api////////////////////
 
-  Future editMemberShipPackageApi(String plan,String price,String id) async {
+  Future editMemberShipPackageApi(String plan, String price, String id) async {
     try {
-      var response = await _apiRepository.editMembershipApi(plan, price,id);
+      var response = await _apiRepository.editMembershipApi(plan, price, id);
       print(response['error_code'].toString());
       // navigatorKey.currentState.pop();
-      navigatorKey.currentState.pushReplacement(BouncyPageRoute(widget: MemberShipPackage()));
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      navigatorKey.currentState
+          .pushReplacement(BouncyPageRoute(widget: MemberShipPackage()));
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
     } catch (e) {
       print(e);
     }
@@ -448,14 +509,17 @@ class ApiManager extends ChangeNotifier{
 
   ///////////////////create Blog Api////////////////////////
 
-  Future addFeedsApi(String title,String description,file,String link,String dropDownValue) async {
+  Future addFeedsApi(String title, String description, file, String link,
+      String dropDownValue) async {
     try {
-      var response = await _apiRepository.createBlogApi(title, description, file,link,dropDownValue);
-      if(response['error_code'].toString() == "1"){
-        navigatorKey.currentState.push(MaterialPageRoute(builder: (context) => FeedList()));
+      var response = await _apiRepository.createBlogApi(
+          title, description, file, link, dropDownValue);
+      if (response['error_code'].toString() == "1") {
+        navigatorKey.currentState
+            .push(MaterialPageRoute(builder: (context) => FeedList()));
       }
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
     } catch (e) {
       print(e);
@@ -467,43 +531,68 @@ class ApiManager extends ChangeNotifier{
   Future<ResponseFetchBlog> fetchBlogApi() async {
     try {
       var response = await _apiRepository.fetchBlogApi();
-      if(response.errorCode.toString() == "1"){
+      if (response.errorCode.toString() == "1") {
         return response;
       }
     } catch (e) {
-      print(e);}}
-
-
+      print(e);
+    }
+  }
 
   ///////////////////create Blog Api////////////////////////
 
-  Future createAppointment(String meetingType,String appointmentDate,String startTime,String endTime,String selectuser,String description,String link) async {
+  Future createAppointment(
+      String meetingType,
+      String appointmentDate,
+      String startTime,
+      String endTime,
+      String selectuser,
+      String description,
+      String link) async {
     try {
-      var response = await _apiRepository.createAppointmentApi(meetingType, appointmentDate, startTime, endTime, selectuser, description,link);
+      var response = await _apiRepository.createAppointmentApi(meetingType,
+          appointmentDate, startTime, endTime, selectuser, description, link);
       // print(response['error_code'].toString());
-      if(response['error_code'].toString() == "1"){
-        navigatorKey.currentState.push(MaterialPageRoute(builder: (context) => AppointmentList()));
+      if (response['error_code'].toString() == "1") {
+        navigatorKey.currentState
+            .push(MaterialPageRoute(builder: (context) => AppointmentList()));
       }
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
     } catch (e) {
       print(e);
     }
   }
 
-
   ///////////////////edit Blog Api////////////////////////
 
-  Future editAppointmentApi(String meetingType,String appointmentDate,String startTime,String endTime,String selectuser,String description,String link,String id) async {
+  Future editAppointmentApi(
+      String meetingType,
+      String appointmentDate,
+      String startTime,
+      String endTime,
+      String selectuser,
+      String description,
+      String link,
+      String id) async {
     try {
-      var response = await _apiRepository.editAppointmentApi(meetingType, appointmentDate, startTime, endTime, selectuser, description,link,id);
+      var response = await _apiRepository.editAppointmentApi(
+          meetingType,
+          appointmentDate,
+          startTime,
+          endTime,
+          selectuser,
+          description,
+          link,
+          id);
       // print(response['error_code'].toString());
-      if(response['error_code'].toString() == "1"){
-        navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (context) => AppointmentList()));
+      if (response['error_code'].toString() == "1") {
+        navigatorKey.currentState.pushReplacement(
+            MaterialPageRoute(builder: (context) => AppointmentList()));
       }
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
     } catch (e) {
       print(e);
@@ -515,36 +604,37 @@ class ApiManager extends ChangeNotifier{
   Future<ResponseFetchAppointment> fetchAppointmentApi() async {
     try {
       var response = await _apiRepository.fetchAppointmentApi();
-      if(response.errorCode == 1){
+      if (response.errorCode == 1) {
         return response;
-      }else{
-
-      }
-
+      } else {}
     } catch (e) {
-      print(e);}}
-
+      print(e);
+    }
+  }
 
   ////////////////// fetchMembers /////////////////////
 
   Future<ResponseFetchMembers> fetchMembersApi() async {
     try {
       var response = await _apiRepository.fetchMembersApi();
-      if(response.data.isEmpty){
-      }else{
+      if (response.data.isEmpty) {
+      } else {
         return response;
       }
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ///////////////////edit Blog Api////////////////////////
 
-  Future editBlogApi(String title,String description,file,String id) async {
+  Future editBlogApi(String title, String description, file, String id) async {
     try {
-      var response = await _apiRepository.editBlogApi(title, description, file, id);
+      var response =
+          await _apiRepository.editBlogApi(title, description, file, id);
       print(response['error_code'].toString());
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
     } catch (e) {
       print(e);
@@ -556,23 +646,25 @@ class ApiManager extends ChangeNotifier{
   Future<ResponseFetchCleints> fetchClientsApi() async {
     try {
       var response = await _apiRepository.fetchClientsApi();
-      if(response.errorCode.toString() == "1"){
+      if (response.errorCode.toString() == "1") {
         return response;
-      }else{
-      }
+      } else {}
     } catch (e) {
-      print(e);}}
-
+      print(e);
+    }
+  }
 
   ///////////////////create New Diet Api////////////////////////
 
-  Future createNewDietApi(String name,String fromDate,String toDate) async {
+  Future createNewDietApi(String name, String fromDate, String toDate) async {
     try {
-      var response = await _apiRepository.createNewDietApi(name, fromDate, toDate);
+      var response =
+          await _apiRepository.createNewDietApi(name, fromDate, toDate);
       print(response['error_code'].toString());
-      SharedPrefManager.savePrefString(AppConstant.DIETID, response['data']['id'].toString());
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      SharedPrefManager.savePrefString(
+          AppConstant.DIETID, response['data']['id'].toString());
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
     } catch (e) {
       print(e);
@@ -581,15 +673,19 @@ class ApiManager extends ChangeNotifier{
 
   ///////////////////create Meal Api////////////////////////
 
-  Future createMealApi(String name,String mealTime,String note,String id) async {
+  Future createMealApi(
+      String name, String mealTime, String note, String id) async {
     try {
-      var response = await _apiRepository.createMealApi(name, mealTime,note,id);
+      var response =
+          await _apiRepository.createMealApi(name, mealTime, note, id);
       print(response['error_code'].toString());
-      navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (context) => CreateNewMealByCategory(id:response['data']['diet_id'].toString())));
+      navigatorKey.currentState.pushReplacement(MaterialPageRoute(
+          builder: (context) => CreateNewMealByCategory(
+              id: response['data']['diet_id'].toString())));
       // navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (context) => CreateNewdiet(id:response['data']['id'].toString(),tagMeal:"tagmeal")));
       // navigatorKey.currentState.pushReplacement(BouncyPageRoute(widget: CreateNewdiet(id:response['data']['id'].toString(),tagMeal:"tagmeal")));
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
     } catch (e) {
       print(e);
     }
@@ -597,14 +693,17 @@ class ApiManager extends ChangeNotifier{
 
   ///////////////////edit Meal Api////////////////////////
 
-  Future editMealApi(String name,String mealTime,String mealId) async {
+  Future editMealApi(String name, String mealTime, String mealId) async {
     try {
-      var response = await _apiRepository.editMealApi(name, mealTime,mealId);
+      var response = await _apiRepository.editMealApi(name, mealTime, mealId);
       print(response['error_code'].toString());
-      navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (context) => CreateNewMealByCategory(id: mealId,)));
+      navigatorKey.currentState.pushReplacement(MaterialPageRoute(
+          builder: (context) => CreateNewMealByCategory(
+                id: mealId,
+              )));
       // navigatorKey.currentState.pushReplacement(BouncyPageRoute(widget: CreateNewdiet(id:response['data']['id'].toString(),tagMeal:"tagmeal")));
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
     } catch (e) {
       print(e);
     }
@@ -617,19 +716,22 @@ class ApiManager extends ChangeNotifier{
       var response = await _apiRepository.fetchMealApi(id);
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ///////////////////add Food Api////////////////////////
 
-  Future addFoodApi(String name,String protein,String carb,String fats,String mealId,String dietId) async {
+  Future addFoodApi(String name, String protein, String carb, String fats,
+      String mealId, String dietId) async {
     try {
       var response = await _apiRepository.addFoodApi(name, protein, carb, fats);
       print(response['error_code'].toString());
-      if(response['error_code'] == 1){
-        addFoodToMealApi(response['data']['id'].toString(),mealId,dietId);
+      if (response['error_code'] == 1) {
+        addFoodToMealApi(response['data']['id'].toString(), mealId, dietId);
       }
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
     } catch (e) {
       print(e);
@@ -638,26 +740,29 @@ class ApiManager extends ChangeNotifier{
 
   ///////////////////add Food To Meal Api////////////////////////
 
-  Future addFoodToMealApi(String id,String mealId,String dietId) async {
+  Future addFoodToMealApi(String id, String mealId, String dietId) async {
     try {
-      var response = await _apiRepository.addFoodToMealApi(id,mealId);
+      var response = await _apiRepository.addFoodToMealApi(id, mealId);
       // print(response['error_code'].toString());
-      navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (context) => CreateNewMealByCategory(id: dietId,)));
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      navigatorKey.currentState.pushReplacement(MaterialPageRoute(
+          builder: (context) => CreateNewMealByCategory(
+                id: dietId,
+              )));
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
     } catch (e) {
       print(e);
     }
   }
 
-  Future addFoodToMealOutApi(String id,String mealId) async {
+  Future addFoodToMealOutApi(String id, String mealId) async {
     try {
-      var response = await _apiRepository.addFoodToMealApi(id,mealId);
+      var response = await _apiRepository.addFoodToMealApi(id, mealId);
       // print(response['error_code'].toString());
       // navigatorKey.currentState.pushReplacement(MaterialPageRoute(builder: (context) => CreateNewdiet(tagMeal:"tagmeal")));
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
     } catch (e) {
       print(e);
@@ -666,13 +771,15 @@ class ApiManager extends ChangeNotifier{
 
   ///////////////////create New Workout Api////////////////////////
 
-  Future createNewWorkOutApi(String name,String fromDate,String toDate) async {
+  Future createNewWorkOutApi(
+      String name, String fromDate, String toDate) async {
     try {
-      var response = await _apiRepository.createClientWorkOutApi(name, fromDate, toDate);
+      var response =
+          await _apiRepository.createClientWorkOutApi(name, fromDate, toDate);
       print(response['error_code'].toString());
       // SharedPrefManager.savePrefString(AppConstant.DIETID, response['data']['id'].toString());
-      return Fluttertoast.showToast(msg: response['reponse_string'],
-          gravity: ToastGravity.BOTTOM);
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
       // navigatorKey.currentState.push(BouncyPageRoute(widget: WorkOut()));
     } catch (e) {
       print(e);
@@ -684,25 +791,29 @@ class ApiManager extends ChangeNotifier{
   Future<ResponseFetchClientWorkout> fetchCleintWorkoutApi() async {
     try {
       var response = await _apiRepository.fetchCleintWorkoutApi();
-      if(response.errorCode == 0){
-
-      }else{
+      if (response.errorCode == 0) {
+      } else {
         return response;
       }
-
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// reviewWorkoutDates /////////////////////
 
-  Future workoutReviewApi(String date,String workoutId) async {
+  Future workoutReviewApi(String date, String workoutId) async {
     try {
-      var response = await _apiRepository.reviewWorkoutbyDatesApi(date, workoutId);
-      if(response['error_code'] == 0){}else{
+      var response =
+          await _apiRepository.reviewWorkoutbyDatesApi(date, workoutId);
+      if (response['error_code'] == 0) {
+      } else {
         return response;
       }
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// fetchExercisesByUserId /////////////////////
 
@@ -717,18 +828,25 @@ class ApiManager extends ChangeNotifier{
 
   ////////////////// add_exercise_to_client_workout /////////////////////
 
-  Future addExerciseToClientWorkout(String exerciseSuperset,Set setExerciseId,Set exerciseName) async {
+  Future addExerciseToClientWorkout(
+      String exerciseSuperset, Set setExerciseId, Set exerciseName) async {
     try {
-      var response = await _apiRepository.addExerciseToClientWorkout(exerciseSuperset, setExerciseId, exerciseName);
+      var response = await _apiRepository.addExerciseToClientWorkout(
+          exerciseSuperset, setExerciseId, exerciseName);
 
-      print("dsssss"+response['error_code'].toString());
-      if(response['error_code'] == 1){
-        navigatorKey.currentState.push(MaterialPageRoute(builder: (context) => NewAddWorkoutTemplate(exerciseSuperset:exerciseSuperset,)));
+      print("dsssss" + response['error_code'].toString());
+      if (response['error_code'] == 1) {
+        navigatorKey.currentState.push(MaterialPageRoute(
+            builder: (context) => NewAddWorkoutTemplate(
+                  exerciseSuperset: exerciseSuperset,
+                )));
       }
 
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// fetchCleintWorkoutDetailsApiApi /////////////////////
 
@@ -737,35 +855,45 @@ class ApiManager extends ChangeNotifier{
       var response = await _apiRepository.fetchWorkOutDetailsApi();
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// addToSetApi /////////////////////
 
-  Future addToSetApi(String tag,String id,String time,String setType) async {
+  Future addToSetApi(String tag, String id, String time, String setType) async {
     try {
-      var response = await _apiRepository.addTosetApi(tag,id,time,setType);
+      var response = await _apiRepository.addTosetApi(tag, id, time, setType);
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// addToSetTwoControllerApi /////////////////////
 
-  Future addToSetTwoControllerApi(String tag,String id,String level,String time,String setType) async {
+  Future addToSetTwoControllerApi(
+      String tag, String id, String level, String time, String setType) async {
     try {
-      var response = await _apiRepository.addTosettwoControllerApi(tag,id,level,time,setType);
+      var response = await _apiRepository.addTosettwoControllerApi(
+          tag, id, level, time, setType);
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// editToSetApi /////////////////////
 
-  Future editToSetApi(String tag,String id,String level) async {
+  Future editToSetApi(String tag, String id, String level) async {
     try {
-      var response = await _apiRepository.editToSetControllerApi(tag,id,level);
+      var response =
+          await _apiRepository.editToSetControllerApi(tag, id, level);
       return response;
     } catch (e) {
-      print(e);}}
-
+      print(e);
+    }
+  }
 
   ////////////////// removeExerciseApi /////////////////////
 
@@ -774,16 +902,20 @@ class ApiManager extends ChangeNotifier{
       var response = await _apiRepository.removeExerCiseApi(id);
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// removeFoodApi /////////////////////
 
-  Future removeFoodApi(String id,String mealid) async {
+  Future removeFoodApi(String id, String mealid) async {
     try {
-      var response = await _apiRepository.removeFoodApi(id,mealid);
+      var response = await _apiRepository.removeFoodApi(id, mealid);
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// removeExerciseApi /////////////////////
 
@@ -792,7 +924,9 @@ class ApiManager extends ChangeNotifier{
       var response = await _apiRepository.removeMealApi(id);
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// removeFeedsApi /////////////////////
 
@@ -801,7 +935,9 @@ class ApiManager extends ChangeNotifier{
       var response = await _apiRepository.removeFeedsApi(id);
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// removeAppointApi /////////////////////
 
@@ -810,7 +946,9 @@ class ApiManager extends ChangeNotifier{
       var response = await _apiRepository.removeAppointmentApi(id);
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// removeExerciseApi /////////////////////
 
@@ -819,7 +957,9 @@ class ApiManager extends ChangeNotifier{
       var response = await _apiRepository.removePackageApi(id);
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   ////////////////// removeMemberApi /////////////////////
 
@@ -839,66 +979,79 @@ class ApiManager extends ChangeNotifier{
       var response = await _apiRepository.dietListApi();
       return response;
     } catch (e) {
-      print(e);}}
-
+      print(e);
+    }
+  }
 
   ////////////////// reviewDietDatesApi /////////////////////
 
   Future reviewDietDatesApi(String id) async {
     try {
       var response = await _apiRepository.reviewDietDatesApi(id);
-      if(response['error_code'] == 1){
+      if (response['error_code'] == 1) {
         return response;
       }
     } catch (e) {
-      print(e);}}
-
+      print(e);
+    }
+  }
 
   ////////////////// reviewDietByDatesApi /////////////////////
 
-  Future reviewDietByDatesApi(String id,String date) async {
+  Future reviewDietByDatesApi(String id, String date) async {
     try {
       var response = await _apiRepository.reviewDietByDatesApi(id, date);
-      if(response['error_code'] == 1){
+      if (response['error_code'] == 1) {
         return response;
       }
     } catch (e) {
-      print(e);}}
-
+      print(e);
+    }
+  }
 
   ////////////////// beforeexercise /////////////////////
 
-  Future beforeExerciseApi(String fromDate,String toDate,String exercise,String set,String set1) async {
+  Future beforeExerciseApi(String fromDate, String toDate, String exercise,
+      String set, String set1) async {
     try {
-      var response = await _apiRepository.beforExerciseApi(fromDate, toDate, exercise, set, set1);
-      if(response['error_code'] == 1){
+      var response = await _apiRepository.beforExerciseApi(
+          fromDate, toDate, exercise, set, set1);
+      if (response['error_code'] == 1) {
         Fluttertoast.showToast(msg: "Exercise added successfully");
         return response;
       }
     } catch (e) {
-      print(e);}}
-
+      print(e);
+    }
+  }
 
   /////////////////////////// sendMessageApi ////////////////////////////////
 
   Future sendMessageApi(msg) async {
     try {
       var response = await _apiRepository.sendMessageApi(msg);
-      if(response['error_code'] == 0){}else{
-        return response;}
+      if (response['error_code'] == 0) {
+      } else {
+        return response;
+      }
     } catch (e) {
-      print(e);}}
-
+      print(e);
+    }
+  }
 
   /////////////////////////// newsendMessageApi ////////////////////////////////
 
-  Future newSendMessageApi(msg,filename) async {
+  Future newSendMessageApi(msg, filename) async {
     try {
       var response = await _apiRepository.newSendMessageApi(msg, filename);
-      if(response['error_code'] == 0){}else{
-        return response;}
+      if (response['error_code'] == 0) {
+      } else {
+        return response;
+      }
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   //////////////////////////////FetchIndividualChatApi ////////////////////////////////
 
@@ -917,20 +1070,26 @@ class ApiManager extends ChangeNotifier{
       notifyListeners();
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
   //////////////////////edit Certificate Api////////////////////
 
-  Future editCertificateApi(file,String id,String type,description,String newId) async {
+  Future editCertificateApi(
+      file, String id, String type, description, String newId) async {
     try {
-      var response = await _apiRepository.editCertificateApi(id,type,description,file,newId);
+      var response = await _apiRepository.editCertificateApi(
+          id, type, description, file, newId);
       print(response['error_code'].toString());
-      navigatorKey.currentState.pushReplacement(BouncyPageRoute(widget: CertificateList()));
-      return Fluttertoast.showToast(msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
+      navigatorKey.currentState
+          .pushReplacement(BouncyPageRoute(widget: CertificateList()));
+      return Fluttertoast.showToast(
+          msg: response['reponse_string'], gravity: ToastGravity.BOTTOM);
     } catch (e) {
-      print(e);}
+      print(e);
+    }
   }
-
 
   ////////////////// deleteWorkoutCategoryApi /////////////////////
 
@@ -940,9 +1099,21 @@ class ApiManager extends ChangeNotifier{
       notifyListeners();
       return response;
     } catch (e) {
-      print(e);}}
+      print(e);
+    }
+  }
 
+  ////////////////// deleteWorkoutApi /////////////////////
 
+  Future deleteWorkoutApi(String id) async {
+    try {
+      var response = await _apiRepository.deleteWorkoutApi(id);
+      notifyListeners();
+      return response;
+    } catch (e) {
+      print(e);
+    }
+  }
   ////////////////// removeWorkoutApi /////////////////////
 
   Future removeWorkoutApi(String id) async {
@@ -951,19 +1122,21 @@ class ApiManager extends ChangeNotifier{
       notifyListeners();
       return response;
     } catch (e) {
-      print(e);}}
-
+      print(e);
+    }
+  }
 
   ////////////////////// questionApi/////////////////
 
   Future<ResponseQuestion> questionApi() async {
     try {
       var response = await _apiRepository.questionApi();
-      if(response.errorCode == 0){}else{
+      if (response.errorCode == 0) {
+      } else {
         return response;
       }
     } catch (e) {
-      print(e);}}
-
-
+      print(e);
+    }
+  }
 }

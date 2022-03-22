@@ -24,7 +24,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
   TextEditingController ifscController = TextEditingController();
   TextEditingController branchController = TextEditingController();
   TextEditingController upiController = TextEditingController();
-
+  String imageUrl;
   List<String> spinnerItems = ['Net Banking', 'Upi'];
 
   void onFileOpen() async {
@@ -37,6 +37,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
       filename = File(file.path);
       setState(() {
         newFile = filename;
+        imageUrl = null;
       });
     }
   }
@@ -75,6 +76,36 @@ class _PaymentDetailsState extends State<PaymentDetails> {
             color: Colors.white,
           ),
         ),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                var _future = Provider.of<ApiManager>(context, listen: false)
+                    .fetchProfileApi();
+                _future.then((value) {
+                  setState(() {
+                    tagPaymentType = value.data.paymentType;
+                    if (tagPaymentType == "NET BANKING") {
+                      statusUpi = false;
+                      dropdownValue = "Net Banking";
+                      statusBank = true;
+                    } else {
+                      statusUpi = true;
+                      dropdownValue = "Upi";
+                      statusBank = false;
+                    }
+                    bankUpi = value.data.upi;
+                    upiController.text = value.data.upi;
+                    bankName = value.data.bankName;
+                    bankNameController.text = value.data.bankName;
+                    branchController.text = value.data.branch;
+                    ifscController.text = value.data.ifsc;
+                    holderNameController.text = value.data.accountHolderName;
+                    imageUrl = value.data.cancelledChequeImage;
+                  });
+                });
+              },
+              icon: Icon(Icons.cloud_download))
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -318,44 +349,52 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                           ),
                         ),
                       ),
-                      Stack(
-                        children: [
-                          Container(
-                            margin:
-                                EdgeInsets.only(left: 10, right: 10, top: 8),
-                            height: 48,
-                            color: Color(0XFFF2F2F2),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 6),
-                                child: Text(
-                                  newFile == null
-                                      ? "upload cancel cheque image"
-                                      : file.name,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Color(0XFF7B7B7B)),
+                      imageUrl == null
+                          ? Stack(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      left: 10, right: 10, top: 8),
+                                  height: 48,
+                                  color: Color(0XFFF2F2F2),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 6),
+                                      child: Text(
+                                        newFile == null
+                                            ? "upload cancel cheque image"
+                                            : file.name,
+                                        textAlign: TextAlign.center,
+                                        style:
+                                            TextStyle(color: Color(0XFF7B7B7B)),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                              right: 29,
-                              top: 7,
-                              child: Center(
-                                child: RaisedButton(
-                                    onPressed: () {
-                                      setState(() {});
-                                      onFileOpen();
-                                    },
-                                    color: Color(0XFF2CB3BF),
-                                    child: Text(
-                                      "Upload",
-                                      style: TextStyle(color: Colors.white),
+                                Positioned(
+                                    right: 29,
+                                    top: 7,
+                                    child: Center(
+                                      child: RaisedButton(
+                                          onPressed: () {
+                                            setState(() {});
+                                            onFileOpen();
+                                          },
+                                          color: Color(0XFF2CB3BF),
+                                          child: Text(
+                                            "Upload",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          )),
                                     )),
-                              )),
-                        ],
-                      ),
+                              ],
+                            )
+                          : GestureDetector(
+                              onTap: onFileOpen,
+                              child: Image.network(
+                                  "http://fitnessapp.frantic.in/" + imageUrl),
+                            ),
                       if (_isLoad == true)
                         CircularProgressIndicator()
                       else
