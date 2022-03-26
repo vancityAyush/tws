@@ -388,6 +388,7 @@ class _NewProfileTabState extends State<NewProfileTab> {
                         Expanded(
                           child: TextFormField(
                             controller: occupation,
+                            enabled: false,
                             keyboardType: TextInputType.number,
                             autovalidateMode: AutovalidateMode.always,
                             style: TextStyle(color: Color(0XFF262626)),
@@ -451,6 +452,7 @@ class _NewProfileTabState extends State<NewProfileTab> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            enabled: false,
                             autovalidateMode: AutovalidateMode.always,
                             style: TextStyle(color: Color(0XFF262626)),
                             decoration: InputDecoration(
